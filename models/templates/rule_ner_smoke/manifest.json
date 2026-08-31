@@ -1,0 +1,17 @@
+{
+  "id": "sutra_rule_ner_smoke",
+  "name": "SUTRA Rule NER Smoke Bundle",
+  "version": "1.0.0",
+  "task": "ner",
+  "framework": "rules",
+  "entrypoint": "model",
+  "languages": ["en"],
+  "source": "sutra-template",
+  "license": "research-prototype",
+  "input_schema": "text",
+  "output_schema": "sutra-ner-v1",
+  "metrics_file": "metrics.json",
+  "priority": 0,
+  "required_files": ["README.md", "metrics.json"],
+  "required_directories": ["model"]
+}

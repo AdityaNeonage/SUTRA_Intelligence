@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Application runtime state and untracked evidence
+*.db
+*.sqlite
+*.sqlite3
+data/incoming/*
+!data/incoming/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/exports/*
+!data/exports/.gitkeep
+models/incoming/*
+!models/incoming/.gitkeep
+models/registered/*
+!models/registered/.gitkeep
+models/quarantine/*
+!models/quarantine/.gitkeep
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# Environment and IDE
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
