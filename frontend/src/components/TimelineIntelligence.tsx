@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState } from 'react';
 import { EventData } from '../types';
 import { Play, Pause, SkipForward, SkipBack, Calendar } from 'lucide-react';

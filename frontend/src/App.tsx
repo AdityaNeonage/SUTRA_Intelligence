@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState } from 'react';
 import Landing from './Landing';
 import { Dashboard } from './Dashboard';

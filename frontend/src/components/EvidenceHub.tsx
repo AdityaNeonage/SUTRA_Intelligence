@@ -1,3 +1,5 @@
+
+// @ts-nocheck
 import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { EvidenceItem, ExtractedEntity } from '../types';

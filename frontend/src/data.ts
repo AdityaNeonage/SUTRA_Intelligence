@@ -193,3 +193,126 @@ export const mockNextEvidence: NextEvidence[] = [
     type: 'phone',
   },
 ];
+
+export interface CrimeIncident {
+  id: string;
+  type: string;
+  severity: "Low" | "Medium" | "High";
+  location: string;
+  lat: number;
+  lng: number;
+  date: string;
+  status: string;
+}
+
+export const crimeIncidents: CrimeIncident[] = [
+  {
+    id: "CR-001",
+    type: "Robbery",
+    severity: "High",
+    location: "Park Street",
+    lat: 22.5535,
+    lng: 88.3525,
+    date: "2026-08-25",
+    status: "Under Investigation",
+  },
+
+  {
+    id: "CR-002",
+    type: "Theft",
+    severity: "Medium",
+    location: "Park Street",
+    lat: 22.5542,
+    lng: 88.3531,
+    date: "2026-08-24",
+    status: "Open",
+  },
+
+  {
+    id: "CR-003",
+    type: "Assault",
+    severity: "High",
+    location: "Park Street",
+    lat: 22.5528,
+    lng: 88.3518,
+    date: "2026-08-22",
+    status: "Under Investigation",
+  },
+
+  {
+    id: "CR-004",
+    type: "Theft",
+    severity: "Medium",
+    location: "Salt Lake",
+    lat: 22.5867,
+    lng: 88.4170,
+    date: "2026-08-23",
+    status: "Open",
+  },
+
+  {
+    id: "CR-005",
+    type: "Robbery",
+    severity: "High",
+    location: "Salt Lake",
+    lat: 22.5875,
+    lng: 88.4182,
+    date: "2026-08-21",
+    status: "Under Investigation",
+  },
+
+  {
+    id: "CR-006",
+    type: "Burglary",
+    severity: "Medium",
+    location: "Howrah",
+    lat: 22.5958,
+    lng: 88.2636,
+    date: "2026-08-20",
+    status: "Open",
+  },
+
+  {
+    id: "CR-007",
+    type: "Robbery",
+    severity: "High",
+    location: "Howrah",
+    lat: 22.5965,
+    lng: 88.2645,
+    date: "2026-08-18",
+    status: "Under Investigation",
+  },
+
+  {
+    id: "CR-008",
+    type: "Cyber Crime",
+    severity: "High",
+    location: "New Town",
+    lat: 22.5797,
+    lng: 88.4590,
+    date: "2026-08-19",
+    status: "Open",
+  },
+
+  {
+    id: "CR-009",
+    type: "Theft",
+    severity: "Low",
+    location: "Ballygunge",
+    lat: 22.5285,
+    lng: 88.3655,
+    date: "2026-08-17",
+    status: "Closed",
+  },
+
+  {
+    id: "CR-010",
+    type: "Assault",
+    severity: "High",
+    location: "Esplanade",
+    lat: 22.5667,
+    lng: 88.3500,
+    date: "2026-08-16",
+    status: "Under Investigation",
+  },
+];

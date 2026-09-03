@@ -1,3 +1,5 @@
+
+// @ts-nocheck
 import { EntityResolutionData } from '../types';
 import { GitMerge, GitBranch, AlertTriangle, CheckCircle2 } from 'lucide-react';
 

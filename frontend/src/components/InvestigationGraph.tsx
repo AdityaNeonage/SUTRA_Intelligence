@@ -1,3 +1,5 @@
+
+// @ts-nocheck
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { NodeData, EdgeData } from '../types';

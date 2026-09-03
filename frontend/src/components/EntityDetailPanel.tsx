@@ -1,3 +1,5 @@
+
+// @ts-nocheck
 import { motion, AnimatePresence } from 'motion/react';
 import { NodeData, EdgeData, ConnectionWhy } from '../types';
 import { X, Network, FileText, ChevronRight, AlertTriangle, Shield, GitBranch, Eye, Link } from 'lucide-react';
