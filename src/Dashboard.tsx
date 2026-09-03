@@ -9,8 +9,8 @@ import { EvidenceHub } from './components/EvidenceHub';
 import { AIInsights } from './components/AIInsights';
 import { EntityDetailPanel } from './components/EntityDetailPanel';
 import CrimeHotspotMap from './components/CrimeHotspotMap';
-import { mockNodes, mockEdges, mockEvents, mockEntityResolution } from './data';
-import { NodeData } from './types';
+import { mockNodes, mockEdges, mockEvents, mockEntityResolution, mockEvidence } from './data';
+import { NodeData, EdgeData, EvidenceItem, ExtractedEntity } from './types';
 
 import {
   Network,
@@ -26,7 +26,8 @@ import {
   ChevronRight,
   MessageSquare,
   Zap,
-  Map
+  Map,
+  Workflow
 } from 'lucide-react';
 
 import { motion, AnimatePresence } from 'framer-motion';
@@ -160,7 +161,18 @@ const Sidebar = ({
 
       <div className="hidden md:flex items-center gap-2">
 
-        <div className="w-6 h-6 border-2 border-white flex items-center justify-center shrink-0">
+        <img 
+          src="/logo.png" 
+          alt="SUTRA Logo" 
+          className="h-8 w-8 object-contain rounded-sm bg-white/5" 
+          onError={(e) => {
+            e.currentTarget.style.display = 'none';
+            if (e.currentTarget.nextElementSibling) {
+              (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
+            }
+          }} 
+        />
+        <div className="hidden w-6 h-6 border-2 border-white items-center justify-center shrink-0">
           <div className="w-3 h-3 bg-white transform rotate-45" />
         </div>
 
@@ -274,29 +286,29 @@ const CopilotPanel = ({
         damping: 30,
         stiffness: 250
       }}
-      className="fixed top-0 right-0 bottom-0 w-80 md:w-96 bg-sutra-dark border-l border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] z-[100] flex flex-col"
+      className="fixed top-0 right-0 bottom-0 w-80 md:w-[26rem] bg-[#0a0710]/95 backdrop-blur-2xl border-l border-white/5 shadow-2xl z-[100] flex flex-col"
     >
 
-      <header className="flex items-center justify-between p-4 border-b border-white/10 bg-sutra-surface">
+      <header className="flex items-center justify-between p-5 border-b border-white/5 bg-gradient-to-r from-sutra-dark to-transparent">
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
 
-          <div className="w-10 h-10 border-2 border-sutra-red/50 bg-black flex items-center justify-center relative rounded-sm">
-
-            <Brain className="w-5 h-5 text-sutra-red" />
-
-            <span className="absolute -top-1.5 -right-1.5 w-3 h-3 rounded-full bg-sutra-red animate-pulse" />
-
+          <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center p-1 relative overflow-hidden shadow-inner">
+            <img src="/image.png" alt="SUTRA Copilot" className="w-full h-full object-contain" />
           </div>
 
           <div>
 
-            <div className="text-xs font-black text-white tracking-widest uppercase">
+            <div className="text-sm font-black text-white tracking-widest uppercase">
               SUTRA Copilot
             </div>
 
-            <div className="text-[10px] text-green-400 uppercase tracking-widest font-semibold mt-0.5">
-              ● Analysis Active
+            <div className="text-[10px] text-green-400 uppercase tracking-widest font-semibold mt-1 flex items-center gap-1.5">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              Analysis Active
             </div>
 
           </div>
@@ -306,14 +318,14 @@ const CopilotPanel = ({
         <button
           onClick={onClose}
           aria-label="Close Copilot"
-          className="w-8 h-8 flex items-center justify-center rounded-md border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-colors focus-visible:ring-2 outline-none"
+          className="w-8 h-8 flex items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/50 hover:text-white hover:bg-white/20 transition-all focus-visible:ring-2 outline-none"
         >
           <X className="w-4 h-4" />
         </button>
 
       </header>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-5">
+      <div className="flex-1 overflow-y-auto p-5 space-y-6 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
 
         {messages.map((msg, i) => (
 
@@ -328,14 +340,14 @@ const CopilotPanel = ({
           >
 
             <div
-              className={`w-8 h-8 shrink-0 border rounded-sm flex items-center justify-center ${msg.role === 'ai'
-                  ? 'border-sutra-red/40 bg-sutra-dark'
-                  : 'border-white/20 bg-sutra-surface'
+              className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center overflow-hidden ${msg.role === 'ai'
+                  ? 'bg-white/5 border border-white/10 p-1'
+                  : 'bg-gradient-to-br from-gray-700 to-gray-900 border border-white/20'
                 }`}
             >
               {msg.role === 'ai'
-                ? <Brain className="w-4 h-4 text-sutra-red" />
-                : <span className="text-[10px] font-bold text-white">INV</span>}
+                ? <img src="/image.png" alt="AI" className="w-full h-full object-contain" />
+                : <span className="text-[9px] font-bold text-white tracking-widest uppercase">INV</span>}
             </div>
 
             <div
@@ -346,9 +358,9 @@ const CopilotPanel = ({
             >
 
               <div
-                className={`inline-block max-w-full p-3.5 rounded-sm text-xs leading-relaxed shadow-sm ${msg.role === 'ai'
-                    ? 'border border-l-2 border-sutra-red border-y-white/5 border-r-white/5 bg-sutra-surface text-white/90'
-                    : 'border border-white/10 bg-sutra-surface-light text-white/70'
+                className={`inline-block max-w-[90%] p-4 rounded-2xl text-xs leading-relaxed shadow-lg ${msg.role === 'ai'
+                    ? 'rounded-tl-none bg-gradient-to-b from-white/10 to-white/5 border border-white/10 text-white/90 backdrop-blur-sm'
+                    : 'rounded-tr-none bg-sutra-red/20 border border-sutra-red/30 text-white'
                   }`}
               >
 
@@ -361,7 +373,7 @@ const CopilotPanel = ({
                         ? (
                           <strong
                             key={k}
-                            className="text-white font-bold"
+                            className="text-white font-bold tracking-wide"
                           >
                             {part}
                           </strong>
@@ -379,14 +391,14 @@ const CopilotPanel = ({
 
               {msg.followups && msg.role === 'ai' && (
 
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-3 flex flex-wrap gap-2 pl-1">
 
                   {msg.followups.map((f, j) => (
 
                     <button
                       key={j}
                       onClick={() => onSendMessage(f)}
-                      className="px-2.5 py-1.5 border border-white/10 rounded-sm text-[10px] uppercase tracking-widest text-white/50 hover:text-white hover:border-white/40 hover:bg-white/5 transition-all flex items-center gap-1.5 focus-visible:ring-1 outline-none"
+                      className="px-3 py-1.5 rounded-full border border-white/10 bg-white/5 text-[10px] uppercase tracking-widest text-white/60 hover:text-white hover:border-white/30 hover:bg-white/10 transition-all flex items-center gap-1.5 focus-visible:ring-2 outline-none shadow-sm"
                     >
                       {f}
                       <ChevronRight className="w-3 h-3" />
@@ -408,22 +420,22 @@ const CopilotPanel = ({
 
           <div className="flex gap-3">
 
-            <div className="w-8 h-8 shrink-0 border border-sutra-red/40 rounded-sm bg-sutra-dark flex items-center justify-center">
-              <Brain className="w-4 h-4 text-sutra-red" />
+            <div className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center overflow-hidden bg-white/5 border border-white/10 p-1">
+              <img src="/image.png" alt="AI" className="w-full h-full object-contain" />
             </div>
 
-            <div className="p-4 border border-l-2 border-sutra-red border-y-white/5 border-r-white/5 rounded-sm bg-sutra-surface flex items-center gap-2">
+            <div className="px-4 py-3 border border-white/10 rounded-2xl rounded-tl-none bg-white/5 flex items-center gap-2">
 
               {[0, 1, 2].map(i => (
 
                 <motion.div
                   key={i}
                   className="w-1.5 h-1.5 bg-sutra-red rounded-full"
-                  animate={{ y: [-3, 3, -3] }}
+                  animate={{ y: [-3, 3, -3], opacity: [0.3, 1, 0.3] }}
                   transition={{
-                    duration: 0.6,
+                    duration: 0.8,
                     repeat: Infinity,
-                    delay: i * 0.15
+                    delay: i * 0.2
                   }}
                 />
 
@@ -439,7 +451,7 @@ const CopilotPanel = ({
 
       </div>
 
-      <div className="p-4 border-t border-white/10 bg-sutra-surface">
+      <div className="p-4 border-t border-white/5 bg-gradient-to-t from-sutra-dark to-transparent">
 
         <div className="relative flex items-center gap-2">
 
@@ -448,15 +460,15 @@ const CopilotPanel = ({
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSend()}
-            placeholder="Ask SUTRA about the case..."
-            className="flex-1 bg-sutra-dark border border-white/10 rounded-sm py-3 px-4 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-sutra-red/60 focus:ring-1 focus:ring-sutra-red/60 transition-all shadow-inner"
+            placeholder="Ask SUTRA Copilot..."
+            className="flex-1 bg-white/5 border border-white/10 rounded-xl py-3.5 px-4 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-sutra-red/60 focus:bg-white/10 transition-all shadow-inner"
           />
 
           <button
             onClick={handleSend}
             disabled={!input.trim() || isTyping}
             aria-label="Send message"
-            className="w-10 h-10 flex items-center justify-center rounded-sm bg-sutra-red text-white hover:bg-sutra-red/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-sutra-dark outline-none"
+            className="w-11 h-11 flex items-center justify-center rounded-xl bg-sutra-red text-white hover:bg-red-500 transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0 focus-visible:ring-2 outline-none shadow-lg shadow-sutra-red/20"
           >
             {isTyping
               ? <Loader2 className="w-4 h-4 animate-spin" />
@@ -478,6 +490,73 @@ export function Dashboard({ onLogout }: DashboardProps) {
 
   const [selectedNode, setSelectedNode] =
     useState<NodeData | null>(null);
+
+  // Lifted Graph State
+  const [nodes, setNodes] = useState<NodeData[]>(mockNodes);
+  const [edges, setEdges] = useState<EdgeData[]>(mockEdges);
+  const [evidence, setEvidence] = useState<EvidenceItem[]>(mockEvidence);
+  const [highlightedTimelineNodes, setHighlightedTimelineNodes] = useState<string[]>([]);
+
+  const handleAddEntityToGraph = useCallback((entity: ExtractedEntity, item: EvidenceItem) => {
+    // 1. Mark entity as addedToGraph in evidence
+    setEvidence(prev => prev.map(ev => ev.id === item.id ? {
+      ...ev,
+      extractedEntities: ev.extractedEntities?.map(ee => ee.id === entity.id ? { ...ee, addedToGraph: true } : ee)
+    } : ev));
+    
+    // 2. Add node to graph
+    const newNodeId = `n_ext_${Date.now()}_${Math.floor(Math.random()*1000)}`;
+    const x = 400 + (Math.random() * 200 - 100);
+    const y = 300 + (Math.random() * 200 - 100);
+    
+    const newNode: NodeData = {
+      id: newNodeId,
+      label: entity.label,
+      type: entity.type as any,
+      x,
+      y,
+      riskScore: Math.floor(Math.random() * 5) + 5,
+      connections: 1,
+      cases: 1,
+      description: `Extracted from evidence: ${item.name}`,
+      evidence: [item.id]
+    };
+    
+    setNodes(prev => [...prev, newNode]);
+    
+    // Link to main Case 104
+    const newEdge: EdgeData = {
+      id: `e_ext_${Date.now()}`,
+      source: newNodeId,
+      target: 'n12',
+      type: 'part_of',
+      weight: 2,
+      label: 'Extracted',
+      confidence: entity.confidence,
+      evidenceIds: [item.id]
+    };
+    
+    setEdges(prev => [...prev, newEdge]);
+  }, []);
+
+  const handleExportJSON = useCallback(() => {
+    const payload = {
+      generatedAt: new Date().toISOString(),
+      nodes,
+      edges,
+      evidence
+    };
+    const json = JSON.stringify(payload, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `sutra-analysis-${new Date().getTime()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [nodes, edges, evidence]);
 
   // Lifted Copilot State
   const [isCopilotOpen, setIsCopilotOpen] =
@@ -555,10 +634,12 @@ export function Dashboard({ onLogout }: DashboardProps) {
                 <div className="flex-1 min-w-0 relative">
 
                   <InvestigationGraph
-                    nodes={mockNodes}
-                    edges={mockEdges}
+                    nodes={nodes}
+                    edges={edges}
                     onNodeSelect={setSelectedNode}
                     selectedNodeId={selectedNode?.id}
+                    highlightedNodeIds={activeTab === 'timeline' ? highlightedTimelineNodes : undefined}
+                    onExport={handleExportJSON}
                   />
 
                   <AnimatePresence>
@@ -585,13 +666,20 @@ export function Dashboard({ onLogout }: DashboardProps) {
 
             {activeTab === 'evidence' && (
               <div className="flex-1 min-h-0 overflow-hidden">
-                <EvidenceHub />
+                <EvidenceHub 
+                  evidence={evidence}
+                  setEvidence={setEvidence}
+                  onAddEntityToGraph={handleAddEntityToGraph}
+                />
               </div>
             )}
 
             {activeTab === 'timeline' && (
               <div className="flex-1 min-h-0 p-6 flex flex-col gap-4">
-                <TimelineIntelligence events={mockEvents} />
+                <TimelineIntelligence 
+                  events={mockEvents} 
+                  onEventActive={(e) => setHighlightedTimelineNodes(e.relatedNodes || [])}
+                />
               </div>
             )}
 
@@ -691,7 +779,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
 
             {isCopilotOpen
               ? <X className="w-5 h-5 text-white" />
-              : <Brain className="w-5 h-5 text-sutra-red group-hover:scale-110 transition-transform" />}
+              : <img src="/image.png" alt="AI" className="w-6 h-6 object-contain group-hover:scale-110 transition-transform drop-shadow-md" />}
 
             {!isCopilotOpen && (
               <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-sutra-red animate-pulse shadow-[0_0_10px_#d946ef]" />

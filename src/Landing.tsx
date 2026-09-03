@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect, useRef } from 'react';
 import { Network, Brain, Eye, FileText, MessageSquare, ChevronRight, Database, Zap, Shield, GitMerge, Activity } from 'lucide-react';
 import { cn } from './lib/utils';
+import { HoloSection } from './HoloSection';
+import { CorePipeline } from './components/CorePipeline';
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -133,7 +135,18 @@ function Header({ onOpenDashboard }: { onOpenDashboard: () => void }) {
     <header className={cn('fixed top-0 left-0 right-0 z-40 transition-all duration-300 border-b', scrolled ? 'bg-[#0a0710]/95 backdrop-blur border-white/10' : 'bg-transparent border-transparent')}>
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-7 h-7 border border-white/60 flex items-center justify-center">
+          <img 
+            src="/logo.png" 
+            alt="SUTRA Logo" 
+            className="h-10 w-10 object-contain rounded-sm bg-white/5" 
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              if (e.currentTarget.nextElementSibling) {
+                (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
+              }
+            }} 
+          />
+          <div className="hidden w-7 h-7 border border-white/60 items-center justify-center">
             <div className="w-3.5 h-3.5 bg-white transform rotate-45" />
           </div>
           <span className="text-xl font-black tracking-[0.2em] uppercase text-white">SUTRA</span>
@@ -284,32 +297,8 @@ function PipelineSection() {
         </motion.div>
 
         {/* Pipeline steps */}
-        <div className="flex flex-col md:flex-row items-stretch gap-0">
-          {PIPELINE_STEPS.map((step, i) => (
-            <div key={step.label} className="flex flex-row md:flex-col items-center md:flex-1">
-              <motion.div
-                className="flex-1 md:flex-none border border-white/10 bg-sutra-surface p-5 md:w-full flex flex-col items-center text-center gap-3 group hover:border-white/25 transition-colors"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <div className="text-3xl">{step.icon}</div>
-                <div>
-                  <div className="text-[10px] font-black uppercase tracking-widest text-white mb-1" style={{ color: step.color }}>{step.label}</div>
-                  <div className="text-[8px] text-white/30 uppercase tracking-widest">{step.sub}</div>
-                </div>
-              </motion.div>
-              {i < PIPELINE_STEPS.length - 1 && (
-                <div className="flex items-center justify-center w-8 md:w-full h-8 md:h-8 shrink-0">
-                  <div className="hidden md:flex w-full h-px bg-white/10 relative">
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-y-4 border-y-transparent border-l-4 border-l-white/10" />
-                  </div>
-                  <div className="md:hidden w-px h-full bg-white/10" />
-                </div>
-              )}
-            </div>
-          ))}
+        <div className="w-full">
+          <CorePipeline />
         </div>
       </div>
     </section>
@@ -750,7 +739,18 @@ function Footer() {
         <div className="grid md:grid-cols-4 gap-12 mb-12">
           <div className="col-span-2">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-7 h-7 border border-white/60 flex items-center justify-center">
+              <img 
+                src="/logo.png" 
+                alt="SUTRA Logo" 
+                className="h-10 w-10 object-contain rounded-sm bg-white/5" 
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  if (e.currentTarget.nextElementSibling) {
+                    (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
+                  }
+                }} 
+              />
+              <div className="hidden w-7 h-7 border border-white/60 items-center justify-center">
                 <div className="w-3.5 h-3.5 bg-white transform rotate-45" />
               </div>
               <span className="text-xl font-black tracking-[0.2em] uppercase text-white">SUTRA</span>

@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { NodeData, EdgeData } from '../types';
-import { Filter, Maximize2, Search, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { Filter, Maximize2, Search, ZoomIn, ZoomOut, RotateCcw, Download } from 'lucide-react';
 
 // Node color config per type
 const NODE_CONFIG: Record<string, { color: string; bg: string; icon: string; label: string }> = {
@@ -39,9 +39,11 @@ interface InvestigationGraphProps {
   edges: EdgeData[];
   onNodeSelect?: (node: NodeData | null) => void;
   selectedNodeId?: string | null;
+  highlightedNodeIds?: string[];
+  onExport?: () => void;
 }
 
-export function InvestigationGraph({ nodes, edges, onNodeSelect, selectedNodeId }: InvestigationGraphProps) {
+export function InvestigationGraph({ nodes, edges, onNodeSelect, selectedNodeId, highlightedNodeIds, onExport }: InvestigationGraphProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [zoom, setZoom] = useState(0.75);
   const [pan, setPan] = useState({ x: 40, y: 20 });
@@ -119,6 +121,9 @@ export function InvestigationGraph({ nodes, edges, onNodeSelect, selectedNodeId 
           <button onClick={() => setZoom(z => Math.min(2, z + 0.15))} className="w-7 h-7 flex items-center justify-center border border-white/10 bg-sutra-dark text-white/40 hover:text-white transition-colors"><ZoomIn className="w-3.5 h-3.5" /></button>
           <button onClick={() => setZoom(z => Math.max(0.3, z - 0.15))} className="w-7 h-7 flex items-center justify-center border border-white/10 bg-sutra-dark text-white/40 hover:text-white transition-colors"><ZoomOut className="w-3.5 h-3.5" /></button>
           <button onClick={resetView} className="w-7 h-7 flex items-center justify-center border border-white/10 bg-sutra-dark text-white/40 hover:text-white transition-colors"><RotateCcw className="w-3.5 h-3.5" /></button>
+          {onExport && (
+            <button onClick={onExport} title="Export Analysis (JSON)" className="w-7 h-7 flex items-center justify-center border border-white/10 bg-sutra-dark text-white/40 hover:text-white transition-colors"><Download className="w-3.5 h-3.5" /></button>
+          )}
         </div>
       </div>
 
@@ -168,10 +173,12 @@ export function InvestigationGraph({ nodes, edges, onNodeSelect, selectedNodeId 
               const src = nodes.find(n => n.id === edge.source);
               const tgt = nodes.find(n => n.id === edge.target);
               if (!src || !tgt) return null;
-              const hidden = !filteredNodeIds.has(src.id) || !filteredNodeIds.has(tgt.id);
+              const isTimelineActive = highlightedNodeIds && highlightedNodeIds.length > 0;
+              const hidden = !filteredNodeIds.has(src.id) || !filteredNodeIds.has(tgt.id) || (isTimelineActive && (!highlightedNodeIds.includes(src.id) && !highlightedNodeIds.includes(tgt.id)));
+              const isHighlightedEdge = isTimelineActive && highlightedNodeIds.includes(src.id) && highlightedNodeIds.includes(tgt.id);
               const isInferred = edge.type === 'inferred';
               const isHovered = hoveredEdge === edge.id;
-              const edgeColor = EDGE_COLOR[edge.type] || 'rgba(255,255,255,0.15)';
+              const edgeColor = isHighlightedEdge ? '#ef4444' : (EDGE_COLOR[edge.type] || 'rgba(255,255,255,0.15)');
               // Midpoint for label
               const mx = (src.x + tgt.x) / 2;
               const my = (src.y + tgt.y) / 2;
@@ -206,8 +213,9 @@ export function InvestigationGraph({ nodes, edges, onNodeSelect, selectedNodeId 
             {nodes.map(node => {
               const cfg = NODE_CONFIG[node.type] || NODE_CONFIG.person;
               const isSelected = selectedNodeId === node.id;
-              const isHidden = !filteredNodeIds.has(node.id);
-              const r = isSelected ? 22 : node.type === 'case' ? 20 : 16;
+              const isHidden = !filteredNodeIds.has(node.id) || (highlightedNodeIds && highlightedNodeIds.length > 0 && !highlightedNodeIds.includes(node.id));
+              const isHighlighted = highlightedNodeIds?.includes(node.id);
+              const r = isSelected || isHighlighted ? 22 : node.type === 'case' ? 20 : 16;
               return (
                 <g
                   key={node.id}
@@ -215,6 +223,15 @@ export function InvestigationGraph({ nodes, edges, onNodeSelect, selectedNodeId 
                   style={{ opacity: isHidden ? 0.08 : 1 }}
                   onClick={() => onNodeSelect?.(isSelected ? null : node)}
                 >
+                  {/* Highlight ring for timeline playback */}
+                  {isHighlighted && !isSelected && (
+                    <motion.circle
+                      cx={node.x} cy={node.y} r={r + 8}
+                      fill="none" stroke="#ef4444" strokeWidth={2}
+                      animate={{ opacity: [0.3, 0.9, 0.3], r: [r + 6, r + 14, r + 6] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                    />
+                  )}
                   {/* Ghost node pulsing ring */}
                   {node.isGhost && (
                     <motion.circle

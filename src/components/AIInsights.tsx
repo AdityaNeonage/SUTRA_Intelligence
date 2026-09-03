@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { mockHypotheses, mockNextEvidence } from '../data';
 import { Hypothesis, NextEvidence } from '../types';
-import { AlertTriangle, Lightbulb, Target, TrendingUp, Search, CheckCircle2, X, ChevronRight, Zap, Brain } from 'lucide-react';
+import { AlertTriangle, Lightbulb, Target, TrendingUp, Search, CheckCircle2, X, ChevronRight, Zap, Brain, Activity } from 'lucide-react';
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 
 const IMPACT_CONFIG = {
   high:   { color: '#d946ef', bg: 'bg-sutra-red/10', border: 'border-sutra-red/30', label: 'HIGH IMPACT' },
@@ -139,10 +140,30 @@ function HypothesisCard({ item, onDismiss, onConfirm }: { item: Hypothesis; onDi
 }
 
 export function AIInsights() {
-  const [tab, setTab] = useState<'next' | 'hypotheses'>('next');
+  const [tab, setTab] = useState<'next' | 'hypotheses' | 'metrics'>('next');
   const [hypotheses, setHypotheses] = useState(mockHypotheses.filter(h => h.status === 'active'));
 
   const activeHypotheses = hypotheses.filter(h => h.status === 'active');
+
+  const processingData = [
+    { time: '10:00', ms: 120 },
+    { time: '10:05', ms: 155 },
+    { time: '10:10', ms: 210 },
+    { time: '10:15', ms: 175 },
+    { time: '10:20', ms: 280 },
+    { time: '10:25', ms: 165 },
+    { time: '10:30', ms: 140 },
+  ];
+
+  const correlationData = [
+    { depth: 'L1', density: 10 },
+    { depth: 'L2', density: 35 },
+    { depth: 'L3', density: 85 },
+    { depth: 'L4', density: 140 },
+    { depth: 'L5', density: 210 },
+    { depth: 'L6', density: 175 },
+    { depth: 'L7', density: 90 },
+  ];
 
   return (
     <div className="w-full h-full flex flex-col bg-sutra-dark overflow-hidden">
@@ -167,6 +188,7 @@ export function AIInsights() {
         {[
           { id: 'next', label: 'Next Best Evidence', icon: <Target className="w-3 h-3" /> },
           { id: 'hypotheses', label: 'Hypotheses', icon: <Lightbulb className="w-3 h-3" />, badge: activeHypotheses.length },
+          { id: 'metrics', label: 'Metrics', icon: <Activity className="w-3 h-3" /> },
         ].map(t => (
           <button
             key={t.id}
@@ -230,6 +252,70 @@ export function AIInsights() {
                   onConfirm={() => setHypotheses(prev => prev.filter(x => x.id !== h.id))}
                 />
               ))}
+            </motion.div>
+          )}
+
+          {tab === 'metrics' && (
+            <motion.div
+              key="metrics"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-6"
+            >
+              <div className="text-[8px] text-white/30 uppercase tracking-widest leading-relaxed">
+                System telemetry indicating network processing times and entity correlation density across the investigation graph.
+              </div>
+
+              {/* Processing Time Chart */}
+              <div className="border border-white/10 bg-white/5 p-4 rounded-xl">
+                <h4 className="text-[10px] font-bold uppercase tracking-widest text-white mb-4 flex items-center gap-2">
+                  <Activity className="w-3 h-3 text-sutra-red" />
+                  Network Processing Time
+                </h4>
+                <div className="h-48 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={processingData} margin={{ top: 5, right: 20, bottom: 5, left: -20 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
+                      <XAxis dataKey="time" stroke="rgba(255,255,255,0.3)" fontSize={10} tickLine={false} axisLine={false} />
+                      <YAxis stroke="rgba(255,255,255,0.3)" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(val) => `${val}ms`} />
+                      <RechartsTooltip 
+                        contentStyle={{ backgroundColor: '#0a0710', borderColor: 'rgba(255,255,255,0.1)', fontSize: '12px' }}
+                        itemStyle={{ color: '#d946ef' }}
+                      />
+                      <Line type="monotone" dataKey="ms" stroke="#d946ef" strokeWidth={2} dot={{ r: 3, fill: '#d946ef', strokeWidth: 0 }} activeDot={{ r: 5 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Correlation Density Chart */}
+              <div className="border border-white/10 bg-white/5 p-4 rounded-xl">
+                <h4 className="text-[10px] font-bold uppercase tracking-widest text-white mb-4 flex items-center gap-2">
+                  <Target className="w-3 h-3 text-blue-400" />
+                  Entity Correlation Density
+                </h4>
+                <div className="h-48 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={correlationData} margin={{ top: 5, right: 20, bottom: 5, left: -20 }}>
+                      <defs>
+                        <linearGradient id="colorDensity" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#60a5fa" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#60a5fa" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
+                      <XAxis dataKey="depth" stroke="rgba(255,255,255,0.3)" fontSize={10} tickLine={false} axisLine={false} />
+                      <YAxis stroke="rgba(255,255,255,0.3)" fontSize={10} tickLine={false} axisLine={false} />
+                      <RechartsTooltip 
+                        contentStyle={{ backgroundColor: '#0a0710', borderColor: 'rgba(255,255,255,0.1)', fontSize: '12px' }}
+                        itemStyle={{ color: '#60a5fa' }}
+                      />
+                      <Area type="monotone" dataKey="density" stroke="#60a5fa" fillOpacity={1} fill="url(#colorDensity)" strokeWidth={2} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

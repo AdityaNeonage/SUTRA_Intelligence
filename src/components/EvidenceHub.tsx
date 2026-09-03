@@ -29,7 +29,7 @@ const ENTITY_NODE_CONFIG: Record<string, { color: string; icon: string }> = {
   organization: { color: '#818cf8', icon: '🏢' },
 };
 
-function EvidenceCard({ item }: { item: EvidenceItem }) {
+function EvidenceCard({ item, onAddEntityToGraph }: { item: EvidenceItem, onAddEntityToGraph: (entity: ExtractedEntity, item: EvidenceItem) => void }) {
   const [expanded, setExpanded] = useState(item.status === 'done' && (item.extractedEntities?.length || 0) > 0);
   const typeCfg = EVIDENCE_TYPE_CONFIG[item.type] || EVIDENCE_TYPE_CONFIG.document;
 
@@ -113,7 +113,7 @@ function EvidenceCard({ item }: { item: EvidenceItem }) {
                         <span className="text-[7px] uppercase tracking-widest">In Graph</span>
                       </div>
                     ) : (
-                      <button className="flex items-center gap-1 text-white/40 hover:text-white transition-colors px-2 py-1 border border-white/10 hover:border-white/30">
+                      <button onClick={() => onAddEntityToGraph(entity, item)} className="flex items-center gap-1 text-white/40 hover:text-white transition-colors px-2 py-1 border border-white/10 hover:border-white/30">
                         <Plus className="w-3 h-3" />
                         <span className="text-[7px] uppercase tracking-widest">Add</span>
                       </button>
@@ -193,9 +193,15 @@ function DropZone({ onDrop }: { onDrop?: (files: File[]) => void }) {
   );
 }
 
-export function EvidenceHub() {
-  const [evidence, setEvidence] = useState<EvidenceItem[]>([]);
-
+export function EvidenceHub({ 
+  evidence, 
+  setEvidence, 
+  onAddEntityToGraph 
+}: { 
+  evidence: EvidenceItem[]; 
+  setEvidence: React.Dispatch<React.SetStateAction<EvidenceItem[]>>; 
+  onAddEntityToGraph: (entity: ExtractedEntity, item: EvidenceItem) => void;
+}) {
   const handleDropDemo = useCallback((files: File[]) => {
     files.forEach(file => {
       // Determine type based on extension or mime
@@ -225,10 +231,16 @@ export function EvidenceHub() {
         setEvidence(prev => prev.map(e => e.id === demoFile.id ? { ...e, progress: 75 } : e));
       }, 1800);
       setTimeout(() => {
+        const entityTypes = ['person', 'vehicle', 'phone', 'account', 'location'];
+        const entityLabels = ['UNKNOWN SUSPECT', 'SUSPICIOUS VEHICLE', 'BURNER PHONE', 'OFFSHORE ACCT', 'SAFEHOUSE L-12'];
+        const rIndex = Math.floor(Math.random() * entityTypes.length);
+        const extractedType = entityTypes[rIndex];
+        const extractedLabel = `${entityLabels[rIndex]} (from ${file.name.substring(0, 5).toUpperCase()})`;
+        
         setEvidence(prev => prev.map(e => e.id === demoFile.id ? {
           ...e, status: 'done', progress: 100,
           extractedEntities: [
-            { id: `ee_${Date.now()}`, label: `EXTRACTED FROM ${file.name.substring(0, 8).toUpperCase()}`, type: 'person', confidence: 0.87, sourceEvidenceId: demoFile.id, addedToGraph: false },
+            { id: `ee_${Date.now()}_${Math.random()}`, label: extractedLabel, type: extractedType as any, confidence: 0.85 + Math.random() * 0.14, sourceEvidenceId: demoFile.id, addedToGraph: false },
           ]
         } : e));
       }, 3000);
@@ -294,7 +306,7 @@ export function EvidenceHub() {
         {/* Evidence list */}
         <div className="space-y-2">
           <div className="text-[8px] uppercase tracking-widest text-white/30">Evidence Queue ({evidence.length})</div>
-          {evidence.map(item => <EvidenceCard key={item.id} item={item} />)}
+          {evidence.map(item => <EvidenceCard key={item.id} item={item} onAddEntityToGraph={onAddEntityToGraph} />)}
         </div>
       </div>
     </div>
