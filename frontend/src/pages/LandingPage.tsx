@@ -322,7 +322,7 @@ export function LandingPage({ onExplorePlatform, onWatchDemo, onOpenLogin, acces
         <div className="sutra-landing__grid" aria-hidden="true" />
         <nav className="sutra-landing-nav" aria-label="SUTRA product navigation">
           <button type="button" className="sutra-landing-nav__brand" onClick={() => scrollTo("sutra-top")} aria-label="Back to the top of SUTRA">
-            <span className="sutra-landing-nav__mark"><ShieldCheck size={20} /></span>
+            <span className="sutra-landing-nav__mark"><img src="/sutra-hacker.png" alt="SUTRA hacker" /></span>
             <span><strong>SUTRA</strong><small>INTELLIGENCE PLATFORM</small></span>
           </button>
           <div className="sutra-landing-nav__links">

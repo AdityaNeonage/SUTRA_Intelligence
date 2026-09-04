@@ -11,6 +11,16 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 
+def normalize_database_url(database_url: str) -> str:
+    """Select psycopg v3 for PostgreSQL URLs supplied by hosted providers."""
+
+    if database_url.startswith("postgres://"):
+        return database_url.replace("postgres://", "postgresql+psycopg://", 1)
+    if database_url.startswith("postgresql://"):
+        return database_url.replace("postgresql://", "postgresql+psycopg://", 1)
+    return database_url
+
+
 class Database:
     """A small wrapper around SQLAlchemy configured from one database URL.
 
@@ -21,6 +31,7 @@ class Database:
     """
 
     def __init__(self, database_url: str, *, echo: bool = False) -> None:
+        database_url = normalize_database_url(database_url)
         engine_options: dict[str, object] = {"echo": echo, "future": True}
         if database_url.lower().startswith("sqlite"):
             engine_options["connect_args"] = {"check_same_thread": False}
@@ -62,4 +73,3 @@ class Database:
         """Release database resources during application shutdown."""
 
         self.engine.dispose()
-

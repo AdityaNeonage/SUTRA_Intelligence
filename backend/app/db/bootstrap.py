@@ -8,8 +8,8 @@ from app.core.config import Settings
 from app.core.security import hash_password
 from app.db.base import Base
 from app.db.database import Database
-from app.models.case import Case  # noqa: F401 - imported to register its table.
 from app.models import intelligence as intelligence_models
+from app.models.case import Case  # noqa: F401 - imported to register its table.
 from app.models.user import User, UserRole
 
 
@@ -26,24 +26,24 @@ def create_schema(database: Database) -> None:
     Base.metadata.create_all(bind=database.engine)
 
 
-def ensure_demo_user(database: Database, settings: Settings) -> None:
+def ensure_demo_user(database: Database, settings: Settings) -> str | None:
     """Create the documented demo administrator only when it does not exist."""
 
     if not settings.seed_demo_user:
-        return
+        return None
 
     email = settings.demo_user_email.strip().lower()
     with database.session() as session:
         existing = session.scalar(select(User).where(User.email == email))
         if existing is not None:
-            return
-        session.add(
-            User(
-                email=email,
-                full_name=settings.demo_user_name.strip(),
-                password_hash=hash_password(settings.demo_user_password),
-                role=UserRole.ADMINISTRATOR,
-                is_active=True,
-            )
+            return existing.id
+        user = User(
+            email=email,
+            full_name=settings.demo_user_name.strip(),
+            password_hash=hash_password(settings.demo_user_password),
+            role=UserRole.ADMINISTRATOR,
+            is_active=True,
         )
+        session.add(user)
         session.commit()
+        return user.id

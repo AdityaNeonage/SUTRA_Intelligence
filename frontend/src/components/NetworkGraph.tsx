@@ -61,6 +61,9 @@ const graphStylesheet: StylesheetJson = [
   { selector: "node.entity-person", style: { "background-color": "#78b8ff", "border-color": "#c3e1ff", "width": 31, "height": 31 } },
   { selector: "node.entity-phone", style: { "background-color": "#72e3c3", "border-color": "#b8fae8", "shape": "round-rectangle" } },
   { selector: "node.entity-bankaccount", style: { "background-color": "#ffc26d", "border-color": "#ffe0a4", "shape": "round-rectangle" } },
+  { selector: "node.role-fraudsource", style: { "background-color": "#f43f5e", "border-color": "#fecdd3", "shape": "diamond", "width": 34, "height": 34 } },
+  { selector: "node.role-fraudmule", style: { "background-color": "#d946ef", "border-color": "#f5d0fe", "shape": "round-rectangle", "width": 31, "height": 31 } },
+  { selector: "node.role-fraudcollector", style: { "background-color": "#7c3aed", "border-color": "#ddd6fe", "shape": "hexagon", "width": 37, "height": 37 } },
   { selector: "node.entity-device", style: { "background-color": "#94d895", "border-color": "#cef8cc", "shape": "round-rectangle" } },
   { selector: "node.entity-vehicle", style: { "background-color": "#b8a6ff", "border-color": "#d9d0ff", "shape": "round-rectangle" } },
   { selector: "node.entity-location", style: { "background-color": "#ee7074", "border-color": "#ffb4b6", "shape": "diamond", "width": 32, "height": 32 } },
@@ -114,7 +117,12 @@ function safeClass(value: string | undefined) {
 
 function makeElements(nodes: GraphNode[], edges: GraphEdge[]): ElementDefinition[] {
   return [
-    ...nodes.map((node) => ({
+    ...nodes.map((node) => {
+      const attributes = typeof node.raw?.attributes === "object" && node.raw.attributes !== null
+        ? node.raw.attributes as Record<string, unknown>
+        : {};
+      const role = typeof attributes.role === "string" ? attributes.role : typeof node.raw?.role === "string" ? node.raw.role : "";
+      return {
       group: "nodes" as const,
       data: {
         id: node.id,
@@ -122,8 +130,9 @@ function makeElements(nodes: GraphNode[], edges: GraphEdge[]): ElementDefinition
         entityType: node.entityType,
         confidence: node.confidence ?? 0,
       },
-      classes: `entity-${safeClass(node.entityType)}`,
-    })),
+      classes: `entity-${safeClass(node.entityType)}${role ? ` role-${safeClass(role)}` : ""}`,
+    };
+    }),
     ...edges.map((edge) => ({
       group: "edges" as const,
       data: {

@@ -28,10 +28,12 @@ evidence and derivation behind it.
   business logic.
 - Synthetic demonstration generator with a cyber-fraud chain, an organized
   network, cross-case links, bridge entities, and duplicate-identity candidates.
-- React/Vite investigator console and Docker Compose deployment assets.
+- React/Vite investigator console, a backend-connected authenticated console,
+  and unified Vercel Services deployment configuration.
 
 Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md),
-[docs/API.md](docs/API.md), and [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md)
+[docs/API.md](docs/API.md), [docs/VERCEL_DEPLOYMENT.md](docs/VERCEL_DEPLOYMENT.md),
+and [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md)
 for the design and current verified status.
 
 ## Quick start — local backend (Python 3.11)
@@ -72,10 +74,30 @@ npm install
 npm run dev
 ```
 
-Then open <http://127.0.0.1:5173>. The frontend is configured to target the
-local API at port 8000. Node/npm were not available on the implementation
-machine, so the source is included but the final browser build must be verified
-after Node is installed.
+Then open <http://127.0.0.1:5173>. Vite proxies same-origin `/api` requests to
+the local backend at port 8000. Use **Explore Platform** for the polished
+synthetic experience or **Backend sign in** for the authenticated live console.
+
+## Unified Vercel deployment
+
+The root `vercel.json` defines two services in one deployment:
+
+- `frontend`: the React/Vite application for `/` and all browser routes.
+- `backend`: the FastAPI application for `/api/*` and `/health`.
+
+From the repository root, link and deploy with:
+
+```powershell
+npx vercel@latest login
+npx vercel@latest link
+npx vercel@latest deploy --prod
+```
+
+Before the production deployment, set the Vercel project's Framework Preset to
+**Services** and add the required backend environment variables. Connect a
+PostgreSQL provider for persistent data; otherwise the deployment uses a
+temporary `/tmp` SQLite demonstration database. Follow the exact one-time setup
+and operating instructions in [docs/VERCEL_DEPLOYMENT.md](docs/VERCEL_DEPLOYMENT.md).
 
 ## Docker Compose
 

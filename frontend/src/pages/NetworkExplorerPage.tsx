@@ -4,6 +4,7 @@ import {
   BadgeCheck,
   CheckCircle2,
   Crosshair,
+  Database,
   Eye,
   Expand,
   GitFork,
@@ -21,6 +22,7 @@ import { EntityInspectorDrawer } from "../features/network/EntityInspectorDrawer
 import { NetworkControls, toggleArrayItem } from "../features/network/NetworkControls";
 import {
   createInitialMockNetwork,
+  createMoneyMuleNetwork,
   expandNetworkConnections,
 } from "../features/network/mockNetworkData";
 import {
@@ -238,7 +240,8 @@ export function NetworkExplorerPage({ token: _token, caseId }: { token?: string;
     if (!focusNodeId) return [];
     return [focusNodeId, ...getConnectedNodeIds(focusNodeId, network.edges)];
   }, [focusNodeId, network.edges, pathResult, selectedEdge, visiblePathNodeIds]);
-  const expansionAvailable = !network.nodes.some((node) => node.isExpansionNode);
+  const moneyMuleMode = network.caseId === "case-money-mule";
+  const expansionAvailable = !moneyMuleMode && !network.nodes.some((node) => node.isExpansionNode);
   const currentCaseLabel = caseId ? `${network.caseLabel} - scoped request ${caseId}` : network.caseLabel;
 
   const notify = useCallback((message: string) => {
@@ -324,6 +327,23 @@ export function NetworkExplorerPage({ token: _token, caseId }: { token?: string;
     graphRef.current?.reset();
     notify("Graph focus and connection-path highlights were reset.");
   }, [notify]);
+
+  const toggleMoneyMuleGraph = useCallback(() => {
+    const next = moneyMuleMode ? createInitialMockNetwork() : createMoneyMuleNetwork();
+    setNetwork(next);
+    setQuery("");
+    setEntityTypes([]);
+    setRelationshipTypes([]);
+    setSelectedNodeId(undefined);
+    setSelectedEdgeId(undefined);
+    setPathMode(false);
+    setPathStartId(undefined);
+    setPathEndId(undefined);
+    setPathResult(null);
+    setRevealNodeIds(next.nodes.map((item) => item.id));
+    setAnimationKey((current) => current + 1);
+    notify(moneyMuleMode ? "Restored the original Phase 2 relationship demo." : "Loaded 30 suspicious accounts and 62 flagged transfers from the supplied CSV files.");
+  }, [moneyMuleMode, notify]);
 
   const togglePathMode = useCallback(() => {
     setPathMode((active) => {
@@ -522,10 +542,11 @@ export function NetworkExplorerPage({ token: _token, caseId }: { token?: string;
               <div><strong>Relationship map</strong><span>{selectedNode ? `Focused: ${selectedNode.label}` : pathMode ? "Choose two entities to compare a bounded path" : "Hover or select a node to highlight direct relationships"}</span></div>
             </div>
             <div className="network-canvas-panel__actions">
+              <button className={`network-action-button${moneyMuleMode ? " network-action-button--active" : ""}`} type="button" onClick={toggleMoneyMuleGraph}><Database size={13} /> {moneyMuleMode ? "Original graph" : "Money Mule CSV"}</button>
               <button className="network-action-button" type="button" onClick={() => graphRef.current?.fit()}><Maximize2 size={13} /> Fit</button>
               <button className="network-action-button" type="button" onClick={() => selectedNode && graphRef.current?.centerNode(selectedNode.id)} disabled={!selectedNode}><Crosshair size={13} /> Center</button>
               <button className={`network-action-button${pathMode ? " network-action-button--active" : ""}`} type="button" onClick={togglePathMode}><GitFork size={13} /> {pathMode ? "Selecting A/B" : "Find connection"}</button>
-              <button className="network-action-button" type="button" onClick={expandConnections}><Expand size={13} /> Expand connections</button>
+              <button className="network-action-button" type="button" onClick={expandConnections} disabled={moneyMuleMode}><Expand size={13} /> Expand connections</button>
               <button className="network-action-button network-action-button--danger" type="button" onClick={resetGraph}><RotateCcw size={13} /> Reset</button>
             </div>
           </header>
@@ -578,7 +599,7 @@ export function NetworkExplorerPage({ token: _token, caseId }: { token?: string;
           onNotice={notify}
         />
       </section>
-      <p className="network-explorer__disclaimer"><ScanSearch size={15} /> This graph uses synthetic Phase 2 data. Verified, inferred, and hypothesis links remain visually distinct; no relationship is a determination of guilt or fact beyond its cited source.</p>
+      <p className="network-explorer__disclaimer"><ScanSearch size={15} /> {moneyMuleMode ? "This graph is generated from the suspicious slice of the supplied accounts.csv and transactions.csv files: 30 labelled accounts and 62 flagged transfers, including the two circular paths described in case_study.md." : "This graph uses synthetic Phase 2 data. Verified, inferred, and hypothesis links remain visually distinct; no relationship is a determination of guilt or fact beyond its cited source."}</p>
       {toast && <div className="network-toast network-toast--info" role="status"><CheckCircle2 size={15} /> {toast}</div>}
     </div>
   );

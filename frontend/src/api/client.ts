@@ -1,10 +1,15 @@
 import type {
   AuthSession,
   CaseRecord,
+  DemoSeedResponse,
+  EvidenceDocumentRecord,
+  EvidenceUploadResponse,
   GraphResponse,
   HealthResponse,
+  IngestionRecord,
   LoginInput,
   PageResponse,
+  CopilotResponse,
 } from "../types/api";
 
 export class ApiClientError extends Error {
@@ -55,7 +60,7 @@ async function request<T>(
 ): Promise<T> {
   const headers = new Headers(options.headers);
   headers.set("Accept", "application/json");
-  if (options.body && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
+  if (options.body && !(options.body instanceof FormData) && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
   let response: Response;
@@ -93,6 +98,10 @@ export const sutraApi = {
     return request<AuthSession["user"]>("/api/auth/me", {}, token);
   },
 
+  seedDemo(token: string) {
+    return request<DemoSeedResponse>("/api/demo/seed", { method: "POST" }, token);
+  },
+
   listCases(token: string, offset = 0, limit = 100) {
     return request<PageResponse<CaseRecord>>("/api/cases", {}, token, { offset, limit });
   },
@@ -119,5 +128,35 @@ export const sutraApi = {
 
   getTimeline(token: string, caseId?: string) {
     return request<unknown>("/api/analytics/timeline", {}, token, { case_id: caseId });
+  },
+
+  uploadEvidence(token: string, file: File, caseId?: string) {
+    const body = new FormData();
+    body.append("file", file);
+    return request<EvidenceUploadResponse>("/api/ingestion/upload", { method: "POST", body }, token, { case_id: caseId });
+  },
+
+  listIngestions(token: string, caseId?: string) {
+    return request<{ items: IngestionRecord[] }>("/api/ingestion", {}, token, { case_id: caseId, limit: 200 });
+  },
+
+  listDocuments(token: string, params?: { caseId?: string; ingestionId?: string; q?: string }) {
+    return request<{ items: EvidenceDocumentRecord[]; limit: number }>("/api/documents", {}, token, {
+      case_id: params?.caseId,
+      ingestion_id: params?.ingestionId,
+      q: params?.q,
+      limit: 200,
+    });
+  },
+
+  getDocument(token: string, documentId: string) {
+    return request<EvidenceDocumentRecord>(`/api/documents/${encodeURIComponent(documentId)}`, {}, token);
+  },
+
+  queryCopilot(token: string, input: { question: string; caseId?: string; entityId?: string }) {
+    return request<CopilotResponse>("/api/copilot/query", {
+      method: "POST",
+      body: JSON.stringify({ question: input.question, case_id: input.caseId, entity_id: input.entityId }),
+    }, token);
   },
 };

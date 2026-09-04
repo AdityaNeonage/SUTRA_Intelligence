@@ -17,6 +17,8 @@ export const sutraQueryKeys = {
   bridges: (caseId?: string) => ["analytics", "bridges", caseId] as const,
   relatedCases: (caseId?: string) => ["cross-case", caseId] as const,
   timeline: (caseId?: string) => ["analytics", "timeline", caseId] as const,
+  ingestions: (caseId?: string) => ["ingestions", caseId] as const,
+  documents: (caseId?: string, ingestionId?: string, q?: string) => ["documents", caseId, ingestionId, q] as const,
 };
 
 export function useSystemHealth() {
@@ -82,5 +84,21 @@ export function useTimeline(token?: string, caseId?: string) {
     queryFn: async () => normalizeTimeline(await sutraApi.getTimeline(token!, caseId)),
     enabled: Boolean(token && caseId),
     retry: 1,
+  });
+}
+
+export function useIngestions(token?: string, caseId?: string) {
+  return useQuery({
+    queryKey: sutraQueryKeys.ingestions(caseId),
+    queryFn: async () => (await sutraApi.listIngestions(token!, caseId)).items,
+    enabled: Boolean(token),
+  });
+}
+
+export function useDocuments(token?: string, params?: { caseId?: string; ingestionId?: string; q?: string }) {
+  return useQuery({
+    queryKey: sutraQueryKeys.documents(params?.caseId, params?.ingestionId, params?.q),
+    queryFn: async () => (await sutraApi.listDocuments(token!, params)).items,
+    enabled: Boolean(token),
   });
 }

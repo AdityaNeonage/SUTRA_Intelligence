@@ -13,7 +13,15 @@ export type SutraRoute =
   | { name: "hypotheses" }
   | { name: "assistant" }
   | { name: "analytics" }
-  | { name: "system" };
+  | { name: "system" }
+  | { name: "live-dashboard" }
+  | { name: "live-cases"; caseId?: string }
+  | { name: "live-network"; caseId?: string }
+  | { name: "live-evidence" }
+  | { name: "live-data-store" }
+  | { name: "live-assistant" }
+  | { name: "live-analytics"; caseId?: string }
+  | { name: "live-system" };
 
 function trimmedPathname() {
   const pathname = window.location.pathname.replace(/\/+$/, "") || "/";
@@ -26,6 +34,14 @@ export function parseSutraRoute(pathname = trimmedPathname()): SutraRoute {
   const query = new URLSearchParams(rawSearch);
   if (segments.length === 0) return { name: "landing" };
   if (segments[0] === "login") return { name: "login" };
+  if (segments[0] === "live" && (segments[1] === undefined || segments[1] === "dashboard")) return { name: "live-dashboard" };
+  if (segments[0] === "live" && segments[1] === "cases") return { name: "live-cases", caseId: segments[2] };
+  if (segments[0] === "live" && segments[1] === "network") return { name: "live-network", caseId: query.get("case") ?? undefined };
+  if (segments[0] === "live" && segments[1] === "evidence") return { name: "live-evidence" };
+  if (segments[0] === "live" && segments[1] === "data-store") return { name: "live-data-store" };
+  if (segments[0] === "live" && segments[1] === "assistant") return { name: "live-assistant" };
+  if (segments[0] === "live" && segments[1] === "analytics") return { name: "live-analytics", caseId: query.get("case") ?? undefined };
+  if (segments[0] === "live" && segments[1] === "system") return { name: "live-system" };
   if (segments[0] === "dashboard") return { name: "dashboard" };
   if (segments[0] === "cases" && segments[1]) return { name: "case-workspace", caseId: segments[1], tab: segments[2] };
   if (segments[0] === "cases") return { name: "cases" };

@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from collections.abc import Mapping
+from dataclasses import dataclass
 from math import isfinite
-from typing import Any, Iterable, Mapping
+from typing import Any
 
 try:
     import networkx as nx
@@ -62,10 +63,7 @@ class GraphAnalyticsService:
         components = list(nx.connected_components(simple))
         degree = nx.degree_centrality(simple)
         betweenness = nx.betweenness_centrality(simple, weight="cost", normalized=True)
-        try:
-            pagerank = nx.pagerank(directed, weight="weight")
-        except (nx.PowerIterationFailedConvergence, ZeroDivisionError):
-            pagerank = {node: 0.0 for node in simple.nodes}
+        pagerank = self._pagerank(directed)
         communities = self.community_map(simple)
         return GraphMetrics(
             node_count=simple.number_of_nodes(),
@@ -77,6 +75,46 @@ class GraphAnalyticsService:
             pagerank=self._round_mapping(pagerank),
             communities=communities,
         )
+
+    @staticmethod
+    def _pagerank(
+        graph: nx.DiGraph,
+        *,
+        alpha: float = 0.85,
+        max_iterations: int = 100,
+        tolerance: float = 1.0e-6,
+    ) -> dict[str, float]:
+        """Compute weighted PageRank without NetworkX's optional SciPy dependency."""
+
+        nodes = list(graph.nodes)
+        if not nodes:
+            return {}
+        count = len(nodes)
+        ranks = {node: 1.0 / count for node in nodes}
+        outgoing = {
+            node: sum(
+                float(data.get("weight", 1.0))
+                for _, _, data in graph.out_edges(node, data=True)
+            )
+            for node in nodes
+        }
+        teleport = (1.0 - alpha) / count
+        for _ in range(max_iterations):
+            dangling = alpha * sum(ranks[node] for node in nodes if outgoing[node] <= 0) / count
+            next_ranks = {node: teleport + dangling for node in nodes}
+            for source in nodes:
+                total = outgoing[source]
+                if total <= 0:
+                    continue
+                for _, target, data in graph.out_edges(source, data=True):
+                    weight = float(data.get("weight", 1.0))
+                    next_ranks[target] += alpha * ranks[source] * weight / total
+            error = sum(abs(next_ranks[node] - ranks[node]) for node in nodes)
+            ranks = next_ranks
+            if error < count * tolerance:
+                break
+        total_rank = sum(ranks.values()) or 1.0
+        return {str(node): rank / total_rank for node, rank in ranks.items()}
 
     def community_map(self, graph: KnowledgeGraph | nx.Graph | nx.DiGraph | nx.MultiGraph | nx.MultiDiGraph) -> dict[str, int]:
         simple = self._simple_undirected(graph)

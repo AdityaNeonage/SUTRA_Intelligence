@@ -20,8 +20,10 @@ from app.core.errors import APIError
 from app.core.logging import configure_logging
 from app.db.bootstrap import create_schema, ensure_demo_user
 from app.db.database import Database
+from app.models.user import User
 from app.schemas.common import ErrorDetail, ErrorResponse
 from app.schemas.health import LivenessResponse
+from app.services.intelligence import IntelligenceService
 
 logger = logging.getLogger("sutra")
 
@@ -50,7 +52,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.settings.storage_path.mkdir(parents=True, exist_ok=True)
         if app.state.settings.database_auto_create:
             create_schema(app.state.database)
-        ensure_demo_user(app.state.database, app.state.settings)
+        demo_user_id = ensure_demo_user(app.state.database, app.state.settings)
+        if app.state.settings.seed_demo_data and demo_user_id:
+            with app.state.database.session() as session:
+                demo_user = session.get(User, demo_user_id)
+                if demo_user is not None:
+                    IntelligenceService().seed_demo(
+                        session,
+                        settings=app.state.settings,
+                        actor=demo_user,
+                    )
         logger.info("application_started", extra={"event": "application_started"})
         try:
             yield
@@ -172,4 +183,3 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
 
 app = create_app()
-

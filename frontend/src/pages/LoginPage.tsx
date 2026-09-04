@@ -24,7 +24,7 @@ export function LoginPage({ onAuthenticated }: { onAuthenticated: (session: Auth
       <div className="login-page__ambient login-page__ambient--two" />
       <section className="login-intro">
         <div className="brand brand--login">
-          <div className="brand__mark"><ShieldCheck size={25} /></div>
+          <div className="brand__mark"><img className="brand__image" src="/sutra-hacker.png" alt="SUTRA hacker" /></div>
           <div><strong>SUTRA</strong><span>SECURE UNIFIED THREAT &amp; RELATIONSHIP ANALYTICS</span></div>
         </div>
         <div className="login-intro__copy">

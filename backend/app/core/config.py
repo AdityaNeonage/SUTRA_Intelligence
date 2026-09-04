@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -10,6 +11,18 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _BACKEND_ROOT = Path(__file__).resolve().parents[2]
 _PROJECT_ROOT = _BACKEND_ROOT.parent
+_IS_VERCEL = bool(os.getenv("VERCEL"))
+_DEFAULT_DATABASE_URL = (
+    "sqlite:////tmp/sutra.db"
+    if _IS_VERCEL
+    else f"sqlite:///{(_BACKEND_ROOT / 'sutra.db').as_posix()}"
+)
+_DEFAULT_STORAGE_PATH = Path("/tmp/sutra-storage") if _IS_VERCEL else _BACKEND_ROOT / "storage"
+_DEFAULT_MODEL_REGISTRY_PATH = (
+    Path("/tmp/sutra-models/registered")
+    if _IS_VERCEL
+    else _PROJECT_ROOT / "models" / "registered"
+)
 
 
 class Settings(BaseSettings):
@@ -30,14 +43,17 @@ class Settings(BaseSettings):
 
     app_name: str = "SUTRA API"
     app_version: str = "0.1.0"
-    environment: str = "development"
+    environment: str = Field(
+        default="development",
+        validation_alias=AliasChoices("SUTRA_ENVIRONMENT", "ENVIRONMENT"),
+    )
     api_prefix: str = "/api"
     # Do not consume a generic DEBUG variable: IDEs and unrelated tooling often
     # define it with non-boolean values such as ``release``.
     debug: bool = Field(default=False, validation_alias=AliasChoices("SUTRA_DEBUG"))
 
     database_url: str = Field(
-        default=f"sqlite:///{(_BACKEND_ROOT / 'sutra.db').as_posix()}",
+        default=_DEFAULT_DATABASE_URL,
         validation_alias=AliasChoices("SUTRA_DATABASE_URL", "DATABASE_URL"),
     )
     database_echo: bool = False
@@ -60,16 +76,28 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = Field(default=60, ge=5, le=1_440)
 
-    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
-    storage_path: Path = _BACKEND_ROOT / "storage"
-    model_registry_path: Path = _PROJECT_ROOT / "models" / "registered"
+    cors_origins: str = Field(
+        default="http://localhost:5173,http://127.0.0.1:5173",
+        validation_alias=AliasChoices("SUTRA_CORS_ORIGINS", "CORS_ORIGINS"),
+    )
+    storage_path: Path = Field(
+        default=_DEFAULT_STORAGE_PATH,
+        validation_alias=AliasChoices("SUTRA_STORAGE_PATH"),
+    )
+    model_registry_path: Path = Field(
+        default=_DEFAULT_MODEL_REGISTRY_PATH,
+        validation_alias=AliasChoices("SUTRA_MODEL_REGISTRY_PATH"),
+    )
 
     active_ner_model: str | None = None
     active_relation_model: str | None = None
     active_embedding_model: str | None = None
     llm_provider: str | None = None
 
-    seed_demo_user: bool = True
+    # Local development gets the documented synthetic administrator. Public
+    # Vercel deployments require an explicit opt-in environment variable.
+    seed_demo_user: bool = not _IS_VERCEL
+    seed_demo_data: bool = False
     demo_user_email: str = "admin@sutra.local"
     demo_user_password: str = "sutra-demo-2026"
     demo_user_name: str = "SUTRA Demo Administrator"

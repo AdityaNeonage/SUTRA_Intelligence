@@ -1,4 +1,6 @@
-import { ArrowUpRight, BriefcaseBusiness, CircleDotDashed, Database, Radar } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ArrowUpRight, BriefcaseBusiness, CircleDotDashed, Database, Radar, Sparkles } from "lucide-react";
+import { sutraApi } from "../api/client";
 import { useCases } from "../api/queries";
 import { EmptyState, ErrorState, LoadingState } from "../components/DataState";
 import { MetricCard } from "../components/MetricCard";
@@ -42,7 +44,12 @@ export function CommandCenterPage({
   onOpenCase: (caseId: string) => void;
   onOpenNetwork: () => void;
 }) {
+  const queryClient = useQueryClient();
   const cases = useCases(token);
+  const seedDemo = useMutation({
+    mutationFn: () => sutraApi.seedDemo(token),
+    onSuccess: async () => queryClient.invalidateQueries({ queryKey: ["cases"] }),
+  });
   const allCases = cases.data ?? [];
   const activeCases = allCases.filter((caseRecord) => !["CLOSED", "ARCHIVED", "RESOLVED"].includes(caseRecord.status.toUpperCase())).length;
   const highPriority = allCases.filter((caseRecord) => ["HIGH", "CRITICAL", "URGENT"].includes(caseRecord.priority.toUpperCase())).length;
@@ -60,6 +67,16 @@ export function CommandCenterPage({
         <MetricCard label="Priority attention" value={cases.isLoading ? "..." : highPriority} detail="High, critical, or urgent" icon={Radar} tone="amber" />
         <MetricCard label="Classifications" value={cases.isLoading ? "..." : classifications} detail="Across available cases" icon={Database} tone="green" />
       </section>
+      {!cases.isLoading && !cases.isError && allCases.length === 0 && (
+        <section className="notice-card">
+          <div className="notice-card__glyph"><Sparkles size={16} /></div>
+          <div><strong>Initialize the synthetic investigation dataset</strong><p>The backend is connected but the database has no cases yet. An administrator can load the deterministic SUTRA demo records.</p></div>
+          <button className="button button--primary" type="button" onClick={() => seedDemo.mutate()} disabled={seedDemo.isPending}>
+            {seedDemo.isPending ? "Initializing..." : "Load demo data"}
+          </button>
+        </section>
+      )}
+      {seedDemo.isError && <div className="inline-error" role="alert">Demo data could not be initialized. Confirm this account has administrator access.</div>}
       <section className="dashboard-grid">
         <article className="panel panel--cases">
           <div className="panel__header"><div><span className="panel__eyebrow">Case portfolio</span><h3>Recent authorised cases</h3></div><span className="panel__hint">{allCases.length} total</span></div>

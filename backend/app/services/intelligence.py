@@ -605,6 +605,12 @@ class IntelligenceService:
         for field, entity_type in values.items():
             value = row.get(field)
             if value not in (None, ""):
+                record_attributes = {
+                    key: item
+                    for key, item in row.items()
+                    if item not in (None, "")
+                    and key in {"role", "opened_date", "country", "is_fraud"}
+                }
                 entities[field] = self.entity_from_value(
                     session,
                     entity_type=entity_type,
@@ -613,7 +619,7 @@ class IntelligenceService:
                     source_record_id=source_record_id,
                     confidence=0.99,
                     document_id=document.id,
-                    attributes={"field": field},
+                    attributes={"field": field, "record_kind": record_kind, **record_attributes},
                 )
         edge_ids: list[str] = []
         if "caller_phone" in entities and "callee_phone" in entities:
@@ -636,12 +642,20 @@ class IntelligenceService:
         evidence_text: str,
         row: Mapping[str, Any],
     ) -> IntelligenceRelationship:
-        attributes = {key: value for key, value in row.items() if key in {"amount", "currency", "transaction_reference", "timestamp", "latitude", "longitude"}}
+        attributes = {
+            key: value
+            for key, value in row.items()
+            if key in {
+                "amount", "currency", "transaction_reference", "timestamp", "latitude", "longitude", "is_fraud"
+            }
+        }
         if "amount" in attributes:
             try:
                 attributes["amount"] = float(attributes["amount"])
             except (TypeError, ValueError):
                 attributes.pop("amount")
+        if "is_fraud" in attributes:
+            attributes["is_fraud"] = str(attributes["is_fraud"]).strip().lower() in {"1", "true", "yes"}
         return self.add_relationship(
             session,
             source=source,

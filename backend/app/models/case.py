@@ -35,7 +35,7 @@ class Case(Base):
 
     __tablename__ = "cases"
 
-    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4))
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
     case_number: Mapped[str] = mapped_column(String(80), unique=True, index=True, nullable=False)
     title: Mapped[str] = mapped_column(String(500), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)

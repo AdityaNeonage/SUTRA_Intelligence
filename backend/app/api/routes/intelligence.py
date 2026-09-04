@@ -48,9 +48,24 @@ feedback_router = APIRouter(prefix="/feedback", tags=["Investigator feedback"])
 audit_router = APIRouter(prefix="/audit", tags=["Audit"])
 model_router = APIRouter(prefix="/models", tags=["Model registry"])
 report_router = APIRouter(prefix="/reports", tags=["Reporting"])
+demo_router = APIRouter(prefix="/demo", tags=["Synthetic demo"])
 
 service = IntelligenceService()
 model_registry = ModelRegistry()
+
+
+@demo_router.post("/seed")
+def seed_synthetic_demo(
+    settings: SettingsDependency,
+    session: SessionDependency,
+    user: CurrentUser,
+    reset: bool = Query(default=False),
+) -> dict[str, Any]:
+    """Create the deterministic synthetic dataset for an administrator."""
+
+    if user.role != UserRole.ADMINISTRATOR:
+        raise APIError(403, "PERMISSION_DENIED", "Only an administrator can seed demo data.")
+    return service.seed_demo(session, settings=settings, actor=user, reset=reset)
 
 
 def _case_access(case_id: str | None, session: SessionDependency, user: CurrentUser, *, write: bool = False) -> None:
@@ -119,7 +134,7 @@ def list_ingestions(
         statement = statement.where(IngestionBatch.case_id == case_id)
     elif user.role not in {UserRole.ADMINISTRATOR, UserRole.SUPERVISOR}:
         visible = accessible_case_ids(session, user) or set()
-        statement = statement.where(IngestionBatch.case_id.in_(visible))
+        statement = statement.where(or_(IngestionBatch.case_id.in_(visible), IngestionBatch.uploaded_by_id == user.id))
     rows = list(session.scalars(statement))
     _audit_read(session, request, user, resource_type="ingestion_batch", case_id=case_id)
     return {
@@ -127,10 +142,65 @@ def list_ingestions(
             {
                 "id": row.id, "case_id": row.case_id, "source_type": row.source_type, "filename": row.filename,
                 "file_hash": row.file_hash, "status": row.status, "row_count": row.row_count,
-                "document_count": row.document_count, "created_at": row.created_at, "completed_at": row.completed_at,
+                "document_count": row.document_count, "error_message": row.error_message,
+                "created_at": row.created_at, "completed_at": row.completed_at,
             }
             for row in rows
         ]
+    }
+
+
+@document_router.get("")
+def list_documents(
+    request: Request,
+    case_id: str | None = Query(default=None),
+    ingestion_id: str | None = Query(default=None),
+    q: str | None = Query(default=None, max_length=200),
+    limit: int = Query(default=100, ge=1, le=500),
+    session: SessionDependency = None,  # type: ignore[assignment]
+    user: CurrentUser = None,  # type: ignore[assignment]
+) -> dict[str, Any]:
+    """List inspectable database records created by evidence ingestion."""
+
+    _case_access(case_id, session, user)
+    statement = select(EvidenceDocument).join(IngestionBatch, IngestionBatch.id == EvidenceDocument.ingestion_id)
+    if case_id:
+        statement = statement.where(EvidenceDocument.case_id == case_id)
+    elif user.role not in {UserRole.ADMINISTRATOR, UserRole.SUPERVISOR}:
+        visible = accessible_case_ids(session, user) or set()
+        statement = statement.where(
+            or_(EvidenceDocument.case_id.in_(visible), IngestionBatch.uploaded_by_id == user.id)
+        )
+    if ingestion_id:
+        statement = statement.where(EvidenceDocument.ingestion_id == ingestion_id)
+    if q and q.strip():
+        pattern = f"%{q.strip()}%"
+        statement = statement.where(
+            or_(
+                EvidenceDocument.original_filename.ilike(pattern),
+                EvidenceDocument.evidence_id.ilike(pattern),
+                EvidenceDocument.raw_text.ilike(pattern),
+            )
+        )
+    rows = list(session.scalars(statement.order_by(desc(EvidenceDocument.created_at)).limit(limit)))
+    _audit_read(session, request, user, resource_type="document_store", case_id=case_id)
+    return {
+        "items": [
+            {
+                "id": row.id,
+                "ingestion_id": row.ingestion_id,
+                "case_id": row.case_id,
+                "evidence_id": row.evidence_id,
+                "filename": row.original_filename,
+                "language": row.language,
+                "page_count": row.page_count,
+                "raw_preview": row.raw_text[:500],
+                "extraction_metadata": row.extraction_metadata or {},
+                "created_at": row.created_at,
+            }
+            for row in rows
+        ],
+        "limit": limit,
     }
 
 

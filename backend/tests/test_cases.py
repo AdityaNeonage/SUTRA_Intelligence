@@ -55,3 +55,70 @@ def test_case_routes_require_auth_and_reject_duplicate_numbers(
     assert duplicate.status_code == 409
     assert duplicate.json()["error"]["code"] == "CASE_NUMBER_EXISTS"
 
+
+def test_administrator_can_seed_and_query_synthetic_intelligence(
+    client: TestClient, auth_headers: dict[str, str]
+) -> None:
+    seeded = client.post("/api/demo/seed", headers=auth_headers)
+    assert seeded.status_code == 200, seeded.text
+    payload = seeded.json()
+    assert len(payload["cases"]) == 5
+    assert payload["entity_count"] > 0
+
+    cases = client.get("/api/cases", headers=auth_headers).json()["items"]
+    target_case = next(item for item in cases if item["case_number"].startswith("SUTRA-"))
+    graph = client.get(
+        "/api/graph/neighborhood",
+        headers=auth_headers,
+        params={"case_id": target_case["id"], "depth": 2},
+    )
+    assert graph.status_code == 200, graph.text
+    assert graph.json()["nodes"]
+
+
+def test_money_mule_csv_upload_populates_graph_and_document_store(
+    client: TestClient, auth_headers: dict[str, str]
+) -> None:
+    created_case = client.post(
+        "/api/cases",
+        headers=auth_headers,
+        json={"case_number": "MULE-DATA-001", "title": "Synthetic mule-ring import"},
+    ).json()
+    case_id = created_case["id"]
+
+    accounts = (
+        "account_id,role,opened_date,country\n"
+        "ACC0121,fraud_source,2024-04-27,US\n"
+        "ACC0126,fraud_mule,2024-12-08,PH\n"
+        "ACC0149,fraud_collector,2025-03-04,US\n"
+    )
+    transactions = (
+        "txn_id,src_account,dst_account,amount,timestamp,is_fraud\n"
+        "TXN00521,ACC0121,ACC0126,2115.71,2025-01-10 22:52,1\n"
+        "TXN00522,ACC0126,ACC0149,2061.36,2025-01-12 05:36,1\n"
+    )
+    for filename, payload in (("accounts.csv", accounts), ("transactions.csv", transactions)):
+        response = client.post(
+            "/api/ingestion/upload",
+            headers=auth_headers,
+            params={"case_id": case_id},
+            files={"file": (filename, payload, "text/csv")},
+        )
+        assert response.status_code == 200, response.text
+        assert response.json()["status"] == "completed"
+
+    graph = client.get(
+        "/api/graph/neighborhood",
+        headers=auth_headers,
+        params={"case_id": case_id, "depth": 2},
+    )
+    assert graph.status_code == 200, graph.text
+    graph_payload = graph.json()
+    assert {node["label"] for node in graph_payload["nodes"]} == {"ACC0121", "ACC0126", "ACC0149"}
+    assert [edge["relationship"] for edge in graph_payload["edges"]] == ["TRANSFERRED_TO", "TRANSFERRED_TO"]
+    assert all(edge["attributes"]["is_fraud"] is True for edge in graph_payload["edges"])
+
+    stored = client.get("/api/documents", headers=auth_headers, params={"case_id": case_id})
+    assert stored.status_code == 200, stored.text
+    assert len(stored.json()["items"]) == 5
+    assert any("TXN00521" in item["raw_preview"] for item in stored.json()["items"])

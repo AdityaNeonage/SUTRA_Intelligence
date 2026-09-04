@@ -40,6 +40,12 @@ export interface PageResponse<T> {
   limit: number;
 }
 
+export interface DemoSeedResponse {
+  cases: Record<string, string>;
+  entity_count: number;
+  relationship_count: number;
+}
+
 export interface HealthService {
   name: string;
   displayName?: string;
@@ -110,4 +116,52 @@ export interface TimelinePoint {
   count: number;
   category?: string;
   raw: Record<string, unknown>;
+}
+
+export interface IngestionRecord {
+  id: string;
+  case_id?: string | null;
+  source_type: string;
+  filename: string;
+  file_hash: string;
+  status: string;
+  row_count: number;
+  document_count: number;
+  error_message?: string | null;
+  created_at: string;
+  completed_at?: string | null;
+}
+
+export interface EvidenceDocumentRecord {
+  id: string;
+  ingestion_id: string;
+  case_id?: string | null;
+  evidence_id: string;
+  filename: string;
+  language: string;
+  page_count?: number | null;
+  raw_preview?: string;
+  raw_text?: string;
+  processed_text?: string;
+  extraction_metadata: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface EvidenceUploadResponse {
+  ingestion_id: string;
+  status: string;
+  filename: string;
+  file_hash: string;
+  warnings: string[];
+  document_ids: string[];
+  entity_ids: string[];
+  relationship_ids: string[];
+}
+
+export interface CopilotResponse {
+  answer: string;
+  entity_ids: string[];
+  edge_ids: string[];
+  evidence: Array<Record<string, unknown>>;
+  limitations: string[];
 }
