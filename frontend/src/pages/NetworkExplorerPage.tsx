@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  AlertTriangle,
+  BadgeCheck,
   CheckCircle2,
   Crosshair,
+  Eye,
   Expand,
   GitFork,
+  Link2,
   Maximize2,
   Network,
   RotateCcw,
@@ -211,6 +215,23 @@ export function NetworkExplorerPage({ token: _token, caseId }: { token?: string;
   const visiblePathNodeIds = pathResult ? pathResult.nodeIds.slice(0, Math.max(pathStep, 1)) : [];
   const visiblePathEdgeIds = pathResult ? pathResult.edgeIds.slice(0, Math.max(pathStep - 1, 0)) : [];
   const focusNodeId = hoveredNodeId ?? selectedNodeId;
+  const bridgeCandidates = useMemo(() => network.nodes
+    .map((node) => ({ node, degree: getConnectedNodeIds(node.id, network.edges).length }))
+    .sort((left, right) => right.degree - left.degree)
+    .slice(0, 3), [network.edges, network.nodes]);
+  const topBridge = bridgeCandidates[0];
+  const evidenceStatusCounts = useMemo(() => {
+    const records = new Map<string, MockNetworkEdge["evidenceStatus"]>();
+    network.edges.forEach((edge) => {
+      edge.evidenceRecords.forEach((record) => records.set(record.id, record.status));
+      if (edge.evidenceRecords.length === 0) records.set(edge.id, edge.evidenceStatus);
+    });
+    return [...records.values()].reduce((counts, status) => {
+      counts[status] = (counts[status] ?? 0) + 1;
+      return counts;
+    }, {} as Record<MockNetworkEdge["evidenceStatus"], number>);
+  }, [network.edges]);
+  const visibleDensity = network.nodes.length ? Math.round((visibleNetwork.nodes.length / network.nodes.length) * 100) : 0;
   const emphasisNodeIds = useMemo(() => {
     if (pathResult) return visiblePathNodeIds;
     if (selectedEdge) return [selectedEdge.source, selectedEdge.target];
@@ -218,7 +239,7 @@ export function NetworkExplorerPage({ token: _token, caseId }: { token?: string;
     return [focusNodeId, ...getConnectedNodeIds(focusNodeId, network.edges)];
   }, [focusNodeId, network.edges, pathResult, selectedEdge, visiblePathNodeIds]);
   const expansionAvailable = !network.nodes.some((node) => node.isExpansionNode);
-  const currentCaseLabel = caseId ? `${network.caseLabel} · scoped request ${caseId}` : network.caseLabel;
+  const currentCaseLabel = caseId ? `${network.caseLabel} - scoped request ${caseId}` : network.caseLabel;
 
   const notify = useCallback((message: string) => {
     setToast(message);
@@ -425,7 +446,7 @@ export function NetworkExplorerPage({ token: _token, caseId }: { token?: string;
     <div className="network-explorer">
       <section className="network-explorer__hero">
         <div className="network-explorer__hero-copy">
-          <div className="eyebrow">Network intelligence · synthetic demo</div>
+          <div className="eyebrow">Network intelligence - synthetic demo</div>
           <h2>Trace evidence-backed relationships without losing the investigative thread.</h2>
           <p>{currentCaseLabel}. Pan, zoom, select, filter, expand, and compare only the bounded mock graph in this Phase 2 experience.</p>
         </div>
@@ -434,6 +455,29 @@ export function NetworkExplorerPage({ token: _token, caseId }: { token?: string;
           <div className="network-explorer__stat"><strong>{network.edges.length}</strong><span>Links</span></div>
           <div className="network-explorer__stat"><strong>{getEvidenceCount(network)}</strong><span>Evidence</span></div>
         </div>
+      </section>
+
+      <section className="network-insight-rail" aria-label="Network insight summary">
+        <button className="network-insight-card network-insight-card--button" type="button" onClick={() => topBridge && focusEntity(topBridge.node.id)} disabled={!topBridge}>
+          <span><Link2 size={15} /> Bridge candidate</span>
+          <strong>{topBridge?.node.label ?? "No bridge entity"}</strong>
+          <small>{topBridge?.degree ?? 0} direct relationships</small>
+        </button>
+        <article className="network-insight-card">
+          <span><BadgeCheck size={15} /> Verified trail</span>
+          <strong>{evidenceStatusCounts.VERIFIED ?? 0} records</strong>
+          <small>Source-backed links stay visually distinct</small>
+        </article>
+        <article className="network-insight-card">
+          <span><AlertTriangle size={15} /> Inference load</span>
+          <strong>{(evidenceStatusCounts.INFERRED ?? 0) + (evidenceStatusCounts.HYPOTHESIS ?? 0)} leads</strong>
+          <small>Analytical links remain review-only</small>
+        </article>
+        <article className="network-insight-card">
+          <span><Eye size={15} /> Visible density</span>
+          <strong>{visibleDensity}%</strong>
+          <small>{visibleNetwork.nodes.length} of {network.nodes.length} entities in view</small>
+        </article>
       </section>
 
       <NetworkControls
@@ -461,11 +505,11 @@ export function NetworkExplorerPage({ token: _token, caseId }: { token?: string;
             <span className="network-path-panel__head-actions"><button className="network-action-button" type="button" onClick={loadFourHopDemo}>Load 4-hop demo</button><button className="network-action-button" type="button" onClick={togglePathMode}><X size={13} /> Cancel</button></span>
           </div>
           <div className="network-path-panel__selects">
-            <label>Entity A<select value={pathStartId ?? ""} onChange={(event) => { setPathStartId(event.target.value || undefined); setPathEndId(undefined); }}><option value="">Select source</option>{network.nodes.map((node) => <option value={node.id} key={node.id}>{node.label} · {ENTITY_TYPE_LABELS[node.entityType]}</option>)}</select></label>
-            <label>Entity B<select value={pathEndId ?? ""} onChange={(event) => setPathEndId(event.target.value || undefined)} disabled={!pathStartId}><option value="">Select target</option>{network.nodes.filter((node) => node.id !== pathStartId).map((node) => <option value={node.id} key={node.id}>{node.label} · {ENTITY_TYPE_LABELS[node.entityType]}</option>)}</select></label>
+            <label>Entity A<select value={pathStartId ?? ""} onChange={(event) => { setPathStartId(event.target.value || undefined); setPathEndId(undefined); }}><option value="">Select source</option>{network.nodes.map((node) => <option value={node.id} key={node.id}>{node.label} - {ENTITY_TYPE_LABELS[node.entityType]}</option>)}</select></label>
+            <label>Entity B<select value={pathEndId ?? ""} onChange={(event) => setPathEndId(event.target.value || undefined)} disabled={!pathStartId}><option value="">Select target</option>{network.nodes.filter((node) => node.id !== pathStartId).map((node) => <option value={node.id} key={node.id}>{node.label} - {ENTITY_TYPE_LABELS[node.entityType]}</option>)}</select></label>
           </div>
           <div className="network-path-panel__selection">
-            {pathResult ? <><b>{pathResult.hops} hop{pathResult.hops === 1 ? "" : "s"}</b><span>·</span><b>{pathResult.evidenceRecords.length} evidence record{pathResult.evidenceRecords.length === 1 ? "" : "s"}</b><span>· sequentially highlighting the path</span></> : <span>Select entity A and B by clicking graph nodes or using these controls.</span>}
+            {pathResult ? <><b>{pathResult.hops} hop{pathResult.hops === 1 ? "" : "s"}</b><span> - </span><b>{pathResult.evidenceRecords.length} evidence record{pathResult.evidenceRecords.length === 1 ? "" : "s"}</b><span> - sequentially highlighting the path</span></> : <span>Select entity A and B by clicking graph nodes or using these controls.</span>}
           </div>
         </section>
       )}
@@ -506,7 +550,7 @@ export function NetworkExplorerPage({ token: _token, caseId }: { token?: string;
               onNodeHover={setHoveredNodeId}
               onCanvasTap={closeDrawer}
             />
-            <span className={`network-graph__status${pathResult ? " network-graph__status--path" : ""}`}><i /> {pathResult ? `Path mode · ${pathResult.hops} hops · ${pathResult.evidenceRecords.length} evidence` : `${visibleNetwork.nodes.length} visible entities · pan, zoom, drag, select`}</span>
+            <span className={`network-graph__status${pathResult ? " network-graph__status--path" : ""}`}><i /> {pathResult ? `Path mode - ${pathResult.hops} hops - ${pathResult.evidenceRecords.length} evidence` : `${visibleNetwork.nodes.length} visible entities - pan, zoom, drag, select`}</span>
           </div>
           <footer className="network-legend" aria-label="Network legend">
             <span className="network-legend__item"><i className="network-legend__swatch network-legend__swatch--person" /> Person</span>

@@ -50,7 +50,7 @@ export function LoginPage({ onAuthenticated }: { onAuthenticated: (session: Auth
           <input id="password" className="input" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Enter your password" required disabled={login.isPending} />
           {login.isError && <div className="inline-error" role="alert"><LockKeyhole size={16} /> {errorMessage(login.error)}</div>}
           <button className="button button--primary button--wide" type="submit" disabled={login.isPending}>
-            {login.isPending ? "Authenticating…" : <>Authenticate <ArrowRight size={17} /></>}
+            {login.isPending ? "Authenticating..." : <>Authenticate <ArrowRight size={17} /></>}
           </button>
           <p className="login-panel__notice">This system is for authorised investigation and analysis only. Never treat an analytical finding as proof without review.</p>
         </form>

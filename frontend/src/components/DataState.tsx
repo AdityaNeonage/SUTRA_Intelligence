@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { AlertTriangle, Database, LoaderCircle, RefreshCw } from "lucide-react";
 import { errorMessage } from "../lib/format";
 
-export function LoadingState({ label = "Retrieving intelligence…", compact = false }: { label?: string; compact?: boolean }) {
+export function LoadingState({ label = "Retrieving intelligence...", compact = false }: { label?: string; compact?: boolean }) {
   return (
     <div className={`data-state${compact ? " data-state--compact" : ""}`} role="status" aria-live="polite">
       <LoaderCircle className="spin" size={compact ? 17 : 26} aria-hidden="true" />

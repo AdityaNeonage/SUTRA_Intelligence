@@ -54,7 +54,7 @@ export function AppShell({
           ))}
         </nav>
         <div className="sidebar__foot">
-          <div className="sidebar__classification"><span /> Synthetic demo · evidence-first</div>
+          <div className="sidebar__classification"><span /> Synthetic demo - evidence-first</div>
           <button className="nav-item nav-item--logout" onClick={onExitDemo}><LogOut size={18} /> <span>Exit demo</span></button>
         </div>
       </aside>

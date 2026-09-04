@@ -6,7 +6,7 @@ import { formatDate } from "../lib/format";
 
 export function SystemHealthPage() {
   const health = useSystemHealth();
-  if (health.isLoading) return <LoadingState label="Checking SUTRA dependencies…" />;
+  if (health.isLoading) return <LoadingState label="Checking SUTRA dependencies..." />;
   if (health.isError) return <ErrorState error={health.error} onRetry={() => void health.refetch()} title="System health unavailable" />;
   const current = health.data;
   const services = current?.services ?? [];

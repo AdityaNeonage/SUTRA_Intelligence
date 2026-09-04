@@ -55,10 +55,10 @@ export function CommandCenterPage({
         <button className="button button--primary" onClick={onOpenNetwork}><Radar size={17} /> Explore network</button>
       </section>
       <section className="metric-grid" aria-label="Case portfolio metrics">
-        <MetricCard label="Assigned cases" value={cases.isLoading ? "…" : allCases.length} detail="Authorised case records" icon={BriefcaseBusiness} />
-        <MetricCard label="Active investigations" value={cases.isLoading ? "…" : activeCases} detail="Not closed or archived" icon={CircleDotDashed} tone="violet" />
-        <MetricCard label="Priority attention" value={cases.isLoading ? "…" : highPriority} detail="High, critical, or urgent" icon={Radar} tone="amber" />
-        <MetricCard label="Classifications" value={cases.isLoading ? "…" : classifications} detail="Across available cases" icon={Database} tone="green" />
+        <MetricCard label="Assigned cases" value={cases.isLoading ? "..." : allCases.length} detail="Authorised case records" icon={BriefcaseBusiness} />
+        <MetricCard label="Active investigations" value={cases.isLoading ? "..." : activeCases} detail="Not closed or archived" icon={CircleDotDashed} tone="violet" />
+        <MetricCard label="Priority attention" value={cases.isLoading ? "..." : highPriority} detail="High, critical, or urgent" icon={Radar} tone="amber" />
+        <MetricCard label="Classifications" value={cases.isLoading ? "..." : classifications} detail="Across available cases" icon={Database} tone="green" />
       </section>
       <section className="dashboard-grid">
         <article className="panel panel--cases">

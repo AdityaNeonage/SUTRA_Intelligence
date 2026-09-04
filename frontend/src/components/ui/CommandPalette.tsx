@@ -37,7 +37,7 @@ export function CommandPalette({
   items,
   onSelect,
   title = "Command palette",
-  placeholder = "Search cases, people, locations, and actions…",
+  placeholder = "Search cases, people, locations, and actions...",
   emptyMessage = "No matching commands or intelligence records.",
   enableHotkey = true,
 }: CommandPaletteProps) {

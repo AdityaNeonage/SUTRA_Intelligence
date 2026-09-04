@@ -1,5 +1,5 @@
 export function formatDate(value?: string | null, includeTime = false) {
-  if (!value) return "—";
+  if (!value) return " - ";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
   return new Intl.DateTimeFormat(undefined, {
@@ -11,13 +11,13 @@ export function formatDate(value?: string | null, includeTime = false) {
 }
 
 export function formatPercent(value?: number | null) {
-  if (value === undefined || value === null || Number.isNaN(value)) return "—";
+  if (value === undefined || value === null || Number.isNaN(value)) return " - ";
   const normalized = value <= 1 ? value * 100 : value;
   return `${Math.round(normalized)}%`;
 }
 
 export function formatScore(value?: number | null) {
-  if (value === undefined || value === null || Number.isNaN(value)) return "—";
+  if (value === undefined || value === null || Number.isNaN(value)) return " - ";
   return value <= 1 ? value.toFixed(2) : value.toFixed(1);
 }
 

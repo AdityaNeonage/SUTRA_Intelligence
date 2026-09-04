@@ -75,10 +75,10 @@ function ExperienceConsole({ route, navigate }: { route: Exclude<SutraRoute, { n
     { id: "go-hypotheses", label: "Compare hypotheses", description: "Open the evidence comparison workbench", group: "Actions", icon: <BrainCircuit size={16} />, onSelect: () => navigate("/hypotheses") },
     { id: "go-assistant", label: "Start AI Assistant demo", description: "Run the local Rahul / Park Street graph-action demo", group: "Actions", icon: <Bot size={16} />, onSelect: () => navigate("/assistant") },
     { id: "go-evidence", label: "Open evidence register", description: "Inspect sources and confidence", group: "Actions", icon: <FileText size={16} />, onSelect: () => navigate("/evidence") },
-    ...cases.map((item) => ({ id: `case-${item.id}`, label: `${item.reference} — ${item.title}`, description: `${item.category} · ${item.status}`, group: "Cases", icon: <FolderKanban size={16} />, keywords: [item.owner, item.priority], onSelect: () => openCase(item.id) })),
-    { id: "entity-rahul", label: "Rahul", description: "Person · focus in Network Explorer", group: "Entities", icon: <Users size={16} />, keywords: ["person", "P-037", "Rahul Verma"], onSelect: () => openEntity("person-rahul-verma") },
-    { id: "entity-park-street", label: "Park Street", description: "Location · focus in Network Explorer", group: "Entities", icon: <MapPin size={16} />, keywords: ["location", "observation"], onSelect: () => openEntity("location-park-street") },
-    { id: "entity-account", label: "Account •••4871", description: "Bank account · focus in Network Explorer", group: "Entities", icon: <Search size={16} />, keywords: ["bank", "transfer", "financial"], onSelect: () => openEntity("bank-account-4871") },
+    ...cases.map((item) => ({ id: `case-${item.id}`, label: `${item.reference} - ${item.title}`, description: `${item.category} - ${item.status}`, group: "Cases", icon: <FolderKanban size={16} />, keywords: [item.owner, item.priority], onSelect: () => openCase(item.id) })),
+    { id: "entity-rahul", label: "Rahul", description: "Person - focus in Network Explorer", group: "Entities", icon: <Users size={16} />, keywords: ["person", "P-037", "Rahul Verma"], onSelect: () => openEntity("person-rahul-verma") },
+    { id: "entity-park-street", label: "Park Street", description: "Location - focus in Network Explorer", group: "Entities", icon: <MapPin size={16} />, keywords: ["location", "observation"], onSelect: () => openEntity("location-park-street") },
+    { id: "entity-account", label: "Account ***4871", description: "Bank account - focus in Network Explorer", group: "Entities", icon: <Search size={16} />, keywords: ["bank", "transfer", "financial"], onSelect: () => openEntity("bank-account-4871") },
   ], [cases, navigate, openCase, openEntity, openNetwork]);
 
   let page: ReactElement;

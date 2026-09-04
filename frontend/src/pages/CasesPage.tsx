@@ -47,9 +47,9 @@ export function CasesPage({ onOpenCase }: { onOpenCase: (caseId: string) => void
         <button className="button button--primary" onClick={() => setIsCreating(true)}><Plus size={17} /> New case</button>
       </section>
       <section className="panel experience-filter-bar" aria-label="Case filters">
-        <label className="input-with-icon experience-search"><Search size={16} /><input className="input" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search case ID, title, category, owner…" /></label>
+        <label className="input-with-icon experience-search"><Search size={16} /><input className="input" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search case ID, title, category, owner..." /></label>
         <label className="experience-filter-select"><Filter size={15} /><select className="input" value={status} onChange={(event) => setStatus(event.target.value as typeof status)}><option value="ALL">All statuses</option><option value="ACTIVE">Active</option><option value="REVIEW">Review</option><option value="ARCHIVED">Archived</option></select></label>
-        <label className="experience-filter-select"><span>Sort</span><select className="input" value={sort} onChange={(event) => setSort(event.target.value as SortMode)}><option value="recent">Recently updated</option><option value="priority">Priority</option><option value="title">Title A–Z</option></select></label>
+        <label className="experience-filter-select"><span>Sort</span><select className="input" value={sort} onChange={(event) => setSort(event.target.value as SortMode)}><option value="recent">Recently updated</option><option value="priority">Priority</option><option value="title">Title A-Z</option></select></label>
       </section>
       <section className="panel experience-cases-table-wrap">
         <div className="panel__header"><div><span className="panel__eyebrow">Authorised demonstration portfolio</span><h3>{filteredCases.length} case{filteredCases.length === 1 ? "" : "s"} in view</h3></div><span className="panel__hint">Synthetic data only</span></div>

@@ -10,7 +10,7 @@ import {
 } from "./networkTypes";
 
 const CASE_ID = "case-104";
-const CASE_LABEL = "CASE-104 · Operation Nightfall";
+const CASE_LABEL = "CASE-104 - Operation Nightfall";
 
 interface EvidenceInput {
   id: string;
@@ -108,7 +108,7 @@ const CALL_RECORD = evidence({
   id: "ev-cdr-1208",
   status: "VERIFIED",
   sourceType: "CALL_DETAIL_RECORD",
-  sourceLabel: "CDR extract · 12 Aug",
+  sourceLabel: "CDR extract - 12 Aug",
   sourceReference: "CDR/IN/2026/0812/019",
   documentId: "doc-cdr-aug12",
   timestamp: "2026-08-12T18:42:00+05:30",
@@ -120,7 +120,7 @@ const BANK_RECORD = evidence({
   id: "ev-bank-184",
   status: "VERIFIED",
   sourceType: "BANK_RECORD",
-  sourceLabel: "Bank statement · 13 Aug",
+  sourceLabel: "Bank statement - 13 Aug",
   sourceReference: "FIN/104/184",
   documentId: "doc-bank-ledger",
   timestamp: "2026-08-13T09:16:00+05:30",
@@ -132,7 +132,7 @@ const DEVICE_REPORT = evidence({
   id: "ev-device-031",
   status: "VERIFIED",
   sourceType: "DEVICE_FORENSICS",
-  sourceLabel: "Device extraction · D-131",
+  sourceLabel: "Device extraction - D-131",
   sourceReference: "DF/131/04",
   documentId: "doc-device-d131",
   timestamp: "2026-08-12T20:08:00+05:30",
@@ -214,11 +214,11 @@ const INITIAL_NODES: MockNetworkNode[] = [
   }),
   node({
     id: "phone-9810-217",
-    label: "Phone · 9810•••217",
+    label: "Phone - 9810***217",
     entityType: "PHONE",
     summary: "Synthetic handset identifier appearing in a bounded call-detail extract.",
     confidence: 0.93,
-    details: { Subscriber_status: "Unverified", Extract: "CDR · 12 Aug", Linked_device: "D-131" },
+    details: { Subscriber_status: "Unverified", Extract: "CDR - 12 Aug", Linked_device: "D-131" },
     evidenceRecords: [CALL_RECORD, DEVICE_REPORT],
     firstSeen: "2026-08-10T13:05:00+05:30",
     lastSeen: "2026-08-12T18:42:00+05:30",
@@ -226,7 +226,7 @@ const INITIAL_NODES: MockNetworkNode[] = [
   }),
   node({
     id: "bank-account-4871",
-    label: "Account · •••4871",
+    label: "Account - ***4871",
     entityType: "BANK_ACCOUNT",
     summary: "Synthetic financial identifier retained for relationship-analysis demonstration only.",
     confidence: 0.89,
@@ -238,7 +238,7 @@ const INITIAL_NODES: MockNetworkNode[] = [
   }),
   node({
     id: "device-d131",
-    label: "Device · D-131",
+    label: "Device - D-131",
     entityType: "DEVICE",
     summary: "Synthetic device profile with retained forensic provenance.",
     confidence: 0.91,
@@ -250,7 +250,7 @@ const INITIAL_NODES: MockNetworkNode[] = [
   }),
   node({
     id: "vehicle-wb04m2208",
-    label: "Vehicle · WB-04M-2208",
+    label: "Vehicle - WB-04M-2208",
     entityType: "VEHICLE",
     summary: "Synthetic vehicle association requiring ongoing evidence review.",
     confidence: 0.72,
@@ -286,7 +286,7 @@ const INITIAL_NODES: MockNetworkNode[] = [
   }),
   node({
     id: "document-cdr-aug12",
-    label: "CDR extract · 12 Aug",
+    label: "CDR extract - 12 Aug",
     entityType: "DOCUMENT",
     summary: "Synthetic source document backing selected network relationships.",
     confidence: 0.96,
@@ -409,11 +409,11 @@ const SECONDARY_NODES: MockNetworkNode[] = [
   }),
   node({
     id: "phone-7003-184",
-    label: "Phone · 7003•••184",
+    label: "Phone - 7003***184",
     entityType: "PHONE",
     summary: "Synthetic secondary handset retained from the same call-record slice.",
     confidence: 0.77,
-    details: { Subscriber_status: "Unverified", Extract: "CDR · 12 Aug", Linked_entity: "P-081" },
+    details: { Subscriber_status: "Unverified", Extract: "CDR - 12 Aug", Linked_entity: "P-081" },
     evidenceRecords: [CALL_RECORD],
     firstSeen: "2026-08-12T18:42:00+05:30",
     lastSeen: "2026-08-12T18:42:00+05:30",
@@ -422,7 +422,7 @@ const SECONDARY_NODES: MockNetworkNode[] = [
   }),
   node({
     id: "bank-account-3042",
-    label: "Account · •••3042",
+    label: "Account - ***3042",
     entityType: "BANK_ACCOUNT",
     summary: "Synthetic destination account in the demonstrative transfer trail.",
     confidence: 0.84,
@@ -435,7 +435,7 @@ const SECONDARY_NODES: MockNetworkNode[] = [
   }),
   node({
     id: "device-delta-19",
-    label: "Device · Delta-19",
+    label: "Device - Delta-19",
     entityType: "DEVICE",
     summary: "Synthetic device association marked as a reviewable analytical inference.",
     confidence: 0.68,
@@ -448,7 +448,7 @@ const SECONDARY_NODES: MockNetworkNode[] = [
   }),
   node({
     id: "vehicle-wb09q8017",
-    label: "Vehicle · WB-09Q-8017",
+    label: "Vehicle - WB-09Q-8017",
     entityType: "VEHICLE",
     summary: "Synthetic secondary vehicle from an associated field observation.",
     confidence: 0.64,
@@ -500,7 +500,7 @@ const SECONDARY_NODES: MockNetworkNode[] = [
   }),
   node({
     id: "document-cctv-park-street",
-    label: "CCTV review · Park Street",
+    label: "CCTV review - Park Street",
     entityType: "DOCUMENT",
     summary: "Synthetic review document with a time-bound co-location observation.",
     confidence: 0.88,

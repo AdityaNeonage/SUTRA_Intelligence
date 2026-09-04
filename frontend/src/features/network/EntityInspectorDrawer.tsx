@@ -119,7 +119,7 @@ export function EntityInspectorDrawer({
           <div><dt>Last observed</dt><dd>{formatTimestamp(node.lastSeen)}</dd></div>
           {Object.entries(node.details).slice(0, 3).map(([label, value]) => <div key={label}><dt>{label.replace(/_/g, " ")}</dt><dd>{value}</dd></div>)}
         </dl>
-        {node.aliases.length > 0 && <div className="network-drawer__alias"><span>Aliases</span><p>{node.aliases.join(" · ")}</p></div>}
+        {node.aliases.length > 0 && <div className="network-drawer__alias"><span>Aliases</span><p>{node.aliases.join(" - ")}</p></div>}
         <div className="network-drawer__actions">
           <button className="network-drawer__action" type="button" onClick={() => onCenter(node.id)}><Crosshair size={13} /> Center</button>
           <button className="network-drawer__action" type="button" onClick={onExpand} disabled={!canExpand}><Expand size={13} /> {canExpand ? "Expand" : "Expanded"}</button>

@@ -53,7 +53,7 @@ export const demoCases: DemoCase[] = [
   {
     id: "case-412",
     reference: "CASE-412",
-    title: "Phishing Ring — East Zone",
+    title: "Phishing Ring - East Zone",
     category: "Phishing",
     description: "Synthetic review of shared device artifacts and incoming call patterns.",
     status: "ACTIVE",
@@ -67,7 +67,7 @@ export const demoCases: DemoCase[] = [
   {
     id: "case-508",
     reference: "CASE-508",
-    title: "UPI Trail — Lakeview",
+    title: "UPI Trail - Lakeview",
     category: "Payment fraud",
     description: "Synthetic payment-node triage awaiting corroborating source records.",
     status: "ARCHIVED",
@@ -85,7 +85,7 @@ export const demoEvidence: EvidenceReference[] = [
     id: "E-102",
     caseId: "case-104",
     documentRef: "CDR-104-07",
-    title: "Call detail extract — handset ending 4421",
+    title: "Call detail extract - handset ending 4421",
     source: "Synthetic telecom record",
     kind: "CALL_DETAIL",
     status: "VERIFIED",
