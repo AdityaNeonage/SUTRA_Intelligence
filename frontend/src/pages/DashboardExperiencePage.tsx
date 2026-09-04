@@ -1,5 +1,5 @@
 import { type CSSProperties, useEffect, useMemo, useState } from "react";
-import { Activity, ArrowRight, BellRing, CheckCircle2, CircleAlert, FolderKanban, Gauge, ListChecks, Network, Radar, ShieldAlert, Sparkles } from "lucide-react";
+import { Activity, ArrowRight, BellRing, CheckCircle2, CircleAlert, FolderKanban, Gauge, ListChecks, Network, Radar, ScanSearch, ShieldAlert, Sparkles } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useDemoExperience } from "../features/demo/DemoExperienceProvider";
 import { formatDate, titleCase } from "../lib/format";
@@ -50,7 +50,7 @@ const priorityRank: Record<DemoCase["priority"], number> = {
   LOW: 1,
 };
 
-export function DashboardExperiencePage({ onOpenCase, onOpenNetwork, onOpenHypotheses }: { onOpenCase: (caseId: string) => void; onOpenNetwork: () => void; onOpenHypotheses: () => void }) {
+export function DashboardExperiencePage({ onOpenCase, onOpenNetwork, onOpenFusion, onOpenHypotheses }: { onOpenCase: (caseId: string) => void; onOpenNetwork: () => void; onOpenFusion: () => void; onOpenHypotheses: () => void }) {
   const { cases, evidence, activities } = useDemoExperience();
   const activeCases = cases.filter((item) => item.status !== "ARCHIVED");
   const entityCount = cases.reduce((sum, item) => sum + item.entityCount, 0);
@@ -67,7 +67,7 @@ export function DashboardExperiencePage({ onOpenCase, onOpenNetwork, onOpenHypot
 
   return (
     <div className="experience-page dashboard-experience page-stack">
-      <section className="experience-page-header experience-page-header--dashboard"><div><span className="eyebrow">SUTRA Command Center</span><h2>Evidence-led network intelligence.</h2><p>Review synthetic case signals, inspect relationship context, and keep uncertainty visible from the first interaction.</p></div><button className="button button--primary" onClick={onOpenNetwork}><Radar size={17} /> Open Network Explorer</button></section>
+      <section className="experience-page-header experience-page-header--dashboard"><div><span className="eyebrow">SUTRA Command Center</span><h2>Evidence-led network intelligence.</h2><p>Review synthetic case signals, inspect relationship context, and keep uncertainty visible from the first interaction.</p></div><div className="dashboard-header-actions"><button className="button button--quiet" onClick={onOpenFusion}><ScanSearch size={17} /> Open Fusion Lab</button><button className="button button--primary" onClick={onOpenNetwork}><Radar size={17} /> Open Network Explorer</button></div></section>
       <section className="experience-metric-grid"><DashboardMetric label="Active cases" value={activeCases.length} detail="Synthetic authorised portfolio" icon={FolderKanban} /><DashboardMetric label="Entities in context" value={entityCount} detail="Across local case records" icon={Network} tone="violet" /><DashboardMetric label="Evidence references" value={evidence.length} detail="With source and confidence" icon={Activity} tone="green" /><DashboardMetric label="Review signals" value={alerts.length} detail="Not determinations" icon={ShieldAlert} tone="red" /></section>
       <section className="dashboard-ops-ribbon" aria-label="Operational signal flow">
         <article><span><CheckCircle2 size={15} /> Source intake</span><strong>{evidence.length} records</strong><small>{averageConfidence}% average confidence</small></article>

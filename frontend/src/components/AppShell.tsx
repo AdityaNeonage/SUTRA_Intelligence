@@ -9,10 +9,11 @@ import {
   LayoutDashboard,
   LogOut,
   Network,
+  ScanSearch,
   ShieldCheck,
 } from "lucide-react";
 
-export type AppView = "dashboard" | "cases" | "network" | "timeline" | "evidence" | "hypotheses" | "assistant" | "analytics" | "system";
+export type AppView = "dashboard" | "cases" | "network" | "timeline" | "evidence" | "fusion" | "hypotheses" | "assistant" | "analytics" | "system";
 
 const navigation: Array<{ id: AppView; label: string; icon: typeof LayoutDashboard; description: string }> = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, description: "Operational intelligence" },
@@ -20,6 +21,7 @@ const navigation: Array<{ id: AppView; label: string; icon: typeof LayoutDashboa
   { id: "network", label: "Network Explorer", icon: Network, description: "Interactive relationship graph" },
   { id: "timeline", label: "Timeline", icon: CalendarClock, description: "Activity and event context" },
   { id: "evidence", label: "Evidence", icon: FileText, description: "Source-aware evidence register" },
+  { id: "fusion", label: "Fusion Lab", icon: ScanSearch, description: "Hotspots, resolution, and evidence pipeline" },
   { id: "hypotheses", label: "Hypothesis Workbench", icon: BrainCircuit, description: "Compare competing explanations" },
   { id: "assistant", label: "AI Assistant", icon: Bot, description: "Reviewable mock graph actions" },
 ];

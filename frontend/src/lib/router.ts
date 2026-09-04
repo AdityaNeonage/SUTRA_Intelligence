@@ -9,6 +9,7 @@ export type SutraRoute =
   | { name: "network" }
   | { name: "timeline" }
   | { name: "evidence"; evidenceId?: string }
+  | { name: "fusion" }
   | { name: "hypotheses" }
   | { name: "assistant" }
   | { name: "analytics" }
@@ -31,6 +32,7 @@ export function parseSutraRoute(pathname = trimmedPathname()): SutraRoute {
   if (segments[0] === "network") return { name: "network" };
   if (segments[0] === "timeline") return { name: "timeline" };
   if (segments[0] === "evidence") return { name: "evidence", evidenceId: query.get("record") ?? undefined };
+  if (segments[0] === "fusion") return { name: "fusion" };
   if (segments[0] === "hypotheses") return { name: "hypotheses" };
   if (segments[0] === "assistant") return { name: "assistant" };
   if (segments[0] === "analytics") return { name: "analytics" };
