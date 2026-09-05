@@ -28,6 +28,7 @@ import { TimelinePage } from "./pages/TimelinePage";
 
 const NetworkExplorerPage = lazy(async () => ({ default: (await import("./pages/NetworkExplorerPage")).NetworkExplorerPage }));
 const FusionIntelligencePage = lazy(async () => ({ default: (await import("./pages/FusionIntelligencePage")).FusionIntelligencePage }));
+const LiveFusionPage = lazy(async () => ({ default: (await import("./pages/LiveFusionPage")).LiveFusionPage }));
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 15_000, refetchOnWindowFocus: false } },
@@ -140,6 +141,7 @@ function LiveConsole({
   const token = session.access_token;
   const caseId = "caseId" in route ? route.caseId : undefined;
   const activeView: AppView = route.name === "live-cases" ? "cases"
+    : route.name === "live-fusion" ? "fusion"
     : route.name === "live-network" ? "network"
       : route.name === "live-evidence" ? "evidence"
         : route.name === "live-data-store" ? "data-store"
@@ -156,6 +158,7 @@ function LiveConsole({
       dashboard: "/live",
       cases: "/live/cases",
       network: "/live/network",
+      fusion: "/live/fusion",
       evidence: "/live/evidence",
       "data-store": "/live/data-store",
       assistant: "/live/assistant",
@@ -165,6 +168,7 @@ function LiveConsole({
     navigate(paths[view] ?? "/live");
   }, [navigate]);
   const commands = useMemo<CommandPaletteItem[]>(() => [
+    { id: "live-fusion", label: "Intelligence Fusion Center", description: "Open the interactive sample map within the live console", group: "Live console", icon: <MapPin size={16} />, onSelect: () => navigate("/live/fusion") },
     { id: "live-dashboard", label: "Live Dashboard", description: "Open the backend-connected overview", group: "Live console", icon: <LayoutDashboard size={16} />, onSelect: () => navigate("/live") },
     { id: "live-cases", label: "Live Cases", description: "Read authorised cases from the database", group: "Live console", icon: <FolderKanban size={16} />, onSelect: () => navigate("/live/cases") },
     { id: "live-network", label: "Live Network", description: "Query the backend knowledge graph", group: "Live console", icon: <Network size={16} />, onSelect: () => navigate("/live/network") },
@@ -179,6 +183,8 @@ function LiveConsole({
     page = <CaseWorkspacePage token={token} caseId={route.caseId} onSelectCase={openCase} onExploreNetwork={() => openNetwork(route.caseId)} onOpenStore={(id, batch) => navigate(`/live/data-store?case=${encodeURIComponent(id)}${batch ? `&batch=${encodeURIComponent(batch)}` : ""}`)} />;
   } else if (route.name === "live-network") {
     page = <LiveNetworkPage token={token} entityId={route.entityId} caseId={route.caseId} onSelectCase={selectNetworkCase} />;
+  } else if (route.name === "live-fusion") {
+    page = <LiveFusionPage onOpenLiveEvidence={() => navigate("/live/evidence")} />;
   } else if (route.name === "live-evidence") {
     page = <LiveEvidencePage token={token} initialCaseId={route.caseId} onOpenDataStore={(id, batch) => navigate(`/live/data-store?case=${encodeURIComponent(id ?? "")}${batch ? `&batch=${encodeURIComponent(batch)}` : ""}`)} onOpenNetwork={openNetwork} />;
   } else if (route.name === "live-data-store") {
@@ -203,7 +209,7 @@ function LiveConsole({
       userName={session.user.full_name}
       userDetail={session.user.role}
     >
-      <div className="experience-route-transition">{page}</div>
+      <Suspense fallback={<PageLoading />}><div className="experience-route-transition">{page}</div></Suspense>
     </AppShell>
     <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} items={commands} />
   </>;

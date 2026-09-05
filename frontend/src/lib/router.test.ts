@@ -4,6 +4,8 @@ import { parseSutraRoute } from "./router";
 describe("parseSutraRoute", () => {
   it("recognises the merged Intelligence Fusion Center route", () => {
     expect(parseSutraRoute("/fusion")).toEqual({ name: "fusion" });
+    expect(parseSutraRoute("/live/fusion")).toEqual({ name: "live-fusion" });
+    expect(parseSutraRoute("/live/fusion/")).toEqual({ name: "live-fusion" });
   });
 
   it("keeps case workspace and evidence query routes intact", () => {

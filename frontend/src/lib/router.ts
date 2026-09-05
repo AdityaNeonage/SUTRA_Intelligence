@@ -20,6 +20,7 @@ export type SutraRoute =
   | { name: "live-evidence"; caseId?: string }
   | { name: "live-data-store"; caseId?: string; ingestionId?: string; documentId?: string }
   | { name: "live-assistant" }
+  | { name: "live-fusion" }
   | { name: "live-analytics"; caseId?: string }
   | { name: "live-system" };
 
@@ -40,6 +41,7 @@ export function parseSutraRoute(pathname = trimmedPathname()): SutraRoute {
   if (segments[0] === "live" && segments[1] === "evidence") return { name: "live-evidence", caseId: query.get("case") ?? undefined };
   if (segments[0] === "live" && segments[1] === "data-store") return { name: "live-data-store", caseId: query.get("case") ?? undefined, ingestionId: query.get("batch") ?? undefined, documentId: query.get("record") ?? undefined };
   if (segments[0] === "live" && segments[1] === "assistant") return { name: "live-assistant" };
+  if (segments[0] === "live" && segments[1] === "fusion") return { name: "live-fusion" };
   if (segments[0] === "live" && segments[1] === "analytics") return { name: "live-analytics", caseId: query.get("case") ?? undefined };
   if (segments[0] === "live" && segments[1] === "system") return { name: "live-system" };
   if (segments[0] === "dashboard") return { name: "dashboard" };

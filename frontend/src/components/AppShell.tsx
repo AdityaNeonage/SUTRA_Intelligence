@@ -32,6 +32,7 @@ const liveNavigation: Array<{ id: AppView; label: string; icon: typeof LayoutDas
   { id: "dashboard", label: "Live Dashboard", icon: LayoutDashboard, description: "Backend-connected operational overview" },
   { id: "cases", label: "Live Cases", icon: FolderKanban, description: "Authorised cases from the database" },
   { id: "network", label: "Live Network", icon: Network, description: "Relationship graph returned by the API" },
+  { id: "fusion", label: "Intelligence Fusion Center", icon: ScanSearch, description: "Interactive sample map and linked evidence inside the live console" },
   { id: "evidence", label: "Evidence Upload", icon: FileText, description: "Upload files into the evidence pipeline" },
   { id: "data-store", label: "Data Store", icon: Database, description: "Inspect files and records stored by the backend" },
   { id: "assistant", label: "SUTRA Copilot", icon: Bot, description: "Deterministic evidence-grounded graph assistance" },
