@@ -23,7 +23,7 @@ const navigation: Array<{ id: AppView; label: string; icon: typeof LayoutDashboa
   { id: "network", label: "Network Explorer", icon: Network, description: "Interactive relationship graph" },
   { id: "timeline", label: "Timeline", icon: CalendarClock, description: "Activity and event context" },
   { id: "evidence", label: "Evidence", icon: FileText, description: "Source-aware evidence register" },
-  { id: "fusion", label: "Fusion Lab", icon: ScanSearch, description: "Hotspots, resolution, and evidence pipeline" },
+  { id: "fusion", label: "Intelligence Fusion Center", icon: ScanSearch, description: "Hotspots, resolution, and evidence pipeline" },
   { id: "hypotheses", label: "Hypothesis Workbench", icon: BrainCircuit, description: "Compare competing explanations" },
   { id: "assistant", label: "AI Assistant", icon: Bot, description: "Reviewable mock graph actions" },
 ];
@@ -34,7 +34,7 @@ const liveNavigation: Array<{ id: AppView; label: string; icon: typeof LayoutDas
   { id: "network", label: "Live Network", icon: Network, description: "Relationship graph returned by the API" },
   { id: "evidence", label: "Evidence Upload", icon: FileText, description: "Upload files into the evidence pipeline" },
   { id: "data-store", label: "Data Store", icon: Database, description: "Inspect files and records stored by the backend" },
-  { id: "assistant", label: "Pari AI", icon: Bot, description: "Pink evidence-grounded AI insights" },
+  { id: "assistant", label: "SUTRA Copilot", icon: Bot, description: "Deterministic evidence-grounded graph assistance" },
   { id: "analytics", label: "Live Analytics", icon: Waypoints, description: "Backend graph analytics" },
   { id: "system", label: "System Health", icon: ServerCog, description: "API and dependency readiness" },
 ];

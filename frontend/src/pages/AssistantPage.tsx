@@ -1,64 +1,32 @@
-import { type FormEvent, useEffect, useRef, useState } from "react";
-import { Bot, BrainCircuit, ChevronDown, FileText, Languages, Mic, MicOff, Network, Send, Sparkles, Target, TrendingUp } from "lucide-react";
-import { initialAssistantMessages } from "../features/demo/mockData";
+import { useEffect, useState, type FormEvent } from "react";
+import { Bot, FileSearch, Network, Send, Sparkles } from "lucide-react";
+import { demoEvidence } from "../features/demo/mockData";
 import { useDemoExperience } from "../features/demo/DemoExperienceProvider";
-import type { AssistantMessage } from "../features/demo/types";
-
-type AssistantStage = "idle" | "analyzing" | "entities" | "complete";
 
 const examplePrompt = "I met Rahul at Park Street on 12 August.";
-
-export function AssistantPage({ onOpenNetwork, onOpenEvidence }: { onOpenNetwork: () => void; onOpenEvidence: (evidenceId?: string) => void }) {
-  const { addAssistantGraphUpdate } = useDemoExperience();
-  const [messages, setMessages] = useState<AssistantMessage[]>(initialAssistantMessages);
+export function AssistantPage({ onOpenNetwork, onOpenEvidence, onOpenTimeline }: { onOpenNetwork: () => void; onOpenEvidence: (evidenceId?: string) => void; onOpenTimeline: () => void }) {
+  const { addAssistantGraphUpdate, focusGraph, selectCase } = useDemoExperience();
+  useEffect(() => { selectCase("case-104"); }, [selectCase]);
   const [draft, setDraft] = useState("");
-  const [language, setLanguage] = useState("auto");
-  const [isListening, setIsListening] = useState(false);
-  const [stage, setStage] = useState<AssistantStage>("idle");
-  const timers = useRef<number[]>([]);
-
-  useEffect(() => () => timers.current.forEach((timer) => window.clearTimeout(timer)), []);
-
-  function addTimer(callback: () => void, delay: number) {
-    timers.current.push(window.setTimeout(callback, delay));
-  }
-
-  function submit(event: FormEvent<HTMLFormElement>) {
+  const [messages, setMessages] = useState<Array<{ question: string; supported: boolean }>>([]);
+  const [applied, setApplied] = useState(false);
+  const evidence = demoEvidence.find(item => item.id === "E-121")!;
+  function submit(event: FormEvent) {
     event.preventDefault();
-    const content = draft.trim();
-    if (!content || stage !== "idle") return;
-    const userMessage: AssistantMessage = { id: `investigator-${Date.now()}`, role: "investigator", text: content, timestamp: new Date().toISOString() };
-    setMessages((current) => [...current, userMessage]);
+    if (!draft.trim()) return;
+    setMessages(current => [...current, { question: draft.trim(), supported: draft.trim().toLowerCase() === examplePrompt.toLowerCase() }]);
     setDraft("");
-    setStage("analyzing");
-    addTimer(() => setStage("entities"), 850);
-    addTimer(() => {
-      addAssistantGraphUpdate();
-      setMessages((current) => [...current, {
-        id: `assistant-${Date.now()}`,
-        role: "assistant",
-        text: "I prepared a reviewable graph action from the synthetic message. The extracted items remain context to corroborate, not verified conclusions.",
-        timestamp: new Date().toISOString(),
-        citations: ["CHAT-104-01", "E-121"],
-        graphAction: "3 entities identified - 2 relationships created",
-      }]);
-      setStage("complete");
-    }, 1650);
-    addTimer(() => setStage("idle"), 2400);
   }
-
-  return (
-    <div className="experience-page assistant-page pari-ai-page page-stack">
-      <section className="experience-page-header"><div><span className="eyebrow">Pari AI Assistant</span><h2>Turn a message into a reviewable graph action.</h2><p>Pari’s pink AI Insights experience is adapted into SUTRA with visible extraction, citations, and synthetic graph changes. This public demo does not call an LLM or decide what is true.</p></div><div className="assistant-mode-chip assistant-mode-chip--pari"><Bot size={16} /> Pink insights demo</div></section>
-      <section className="pari-ai-insights">
-        <article><Target size={18} /><div><span>Next best evidence</span><strong>Verify collector-account KYC</strong><p>Prioritise ACC0146–ACC0150 from the supplied case study.</p></div></article>
-        <article><BrainCircuit size={18} /><div><span>Leading hypothesis</span><strong>Smurfing and rapid consolidation</strong><p>Review pass-through transfers inside 48 hours.</p></div></article>
-        <article><TrendingUp size={18} /><div><span>Pattern signal</span><strong>Two circular fund paths</strong><p>Compare cycles and dense mule communities in Network.</p></div></article>
-      </section>
-      <section className="assistant-layout">
-        <article className="panel assistant-chat"><div className="panel__header"><div><span className="panel__eyebrow">Investigation conversation</span><h3>Cited, action-oriented assistance</h3></div><span className="panel__hint">Synthetic only</span></div><div className="assistant-chat__messages" aria-live="polite">{messages.map((message) => <article className={`assistant-message assistant-message--${message.role}`} key={message.id}><span className="assistant-message__avatar">{message.role === "assistant" ? <Bot size={15} /> : "I"}</span><div><strong>{message.role === "assistant" ? "SUTRA Assistant" : "Investigator"}</strong><p>{message.text}</p>{message.citations && <div className="assistant-message__citations">{message.citations.map((citation) => <button key={citation} onClick={() => onOpenEvidence(citation.startsWith("E-") ? citation : undefined)}><FileText size={12} /> {citation}</button>)}</div>}{message.graphAction && <button className="assistant-message__graph-action" onClick={onOpenNetwork}><Network size={14} /> {message.graphAction}</button>}</div></article>)}</div><form className="assistant-composer" onSubmit={submit}><div className="assistant-composer__tools"><button type="button" className={isListening ? "icon-button assistant-mic assistant-mic--active" : "icon-button assistant-mic"} title={isListening ? "Stop mock microphone" : "Start mock microphone"} onClick={() => setIsListening((current) => !current)}>{isListening ? <MicOff size={17} /> : <Mic size={17} />}</button><label><Languages size={15} /><select value={language} onChange={(event) => setLanguage(event.target.value)} aria-label="Message language"><option value="auto">Auto-detect</option><option value="en">English</option><option value="hi">Hindi</option><option value="bn">Bengali</option></select><ChevronDown size={13} /></label></div><textarea value={draft} onChange={(event) => setDraft(event.target.value)} placeholder={isListening ? "Mock microphone active - type a message to continue" : "Describe a synthetic observation or ask for cited context..."} aria-label="Assistant message" /><button className="button button--primary" type="submit" disabled={!draft.trim() || stage !== "idle"}><Send size={16} /> Send</button></form></article>
-        <aside className="assistant-analysis panel"><div className="panel__header"><div><span className="panel__eyebrow">Graph action</span><h3>Visible reasoning steps</h3></div><Sparkles size={18} /></div><div className="assistant-analysis__body"><button className="assistant-example" onClick={() => setDraft(examplePrompt)}><span>Try the live demo</span><strong>{examplePrompt}</strong></button><ol className="assistant-steps"><li className={stage === "analyzing" || stage === "entities" || stage === "complete" ? "assistant-step--active" : ""}><i /><span><strong>Analyzing message</strong><small>{stage === "analyzing" ? "Checking structured context..." : stage === "idle" ? "Awaiting a message" : "Message prepared for review"}</small></span></li><li className={stage === "entities" || stage === "complete" ? "assistant-step--active" : ""}><i /><span><strong>Extracted entities</strong><small>Rahul - Park Street - 12 August</small></span></li><li className={stage === "complete" ? "assistant-step--active" : ""}><i /><span><strong>Proposed graph update</strong><small>3 entities identified - 2 relationships created</small></span></li></ol><div className="assistant-analysis__notice"><FileText size={15} /><p>Created links are clearly marked as inferred or source-backed and remain inspectable in the Network Explorer.</p></div></div></aside>
-      </section>
-    </div>
-  );
+  function applyGraph() { if (!applied) addAssistantGraphUpdate(); setApplied(true); focusGraph(["person-rahul", "location-park-street"]); onOpenNetwork(); }
+  return <div className="experience-page page-stack copilot-page">
+    <section className="copilot-header"><div><span className="eyebrow">SUTRA Copilot</span><h2>From a statement to an inspectable lead.</h2><p>Case 104 · Financial fraud · Sample investigation</p></div><span className="copilot-mode">SYNTHETIC DEMO · No backend or LLM call</span></section>
+    <section className="copilot-layout">
+      <article className="panel copilot-conversation"><div className="panel__header"><h3>Investigation conversation</h3><Bot size={19} /></div><div className="copilot-messages" aria-live="polite"><div className="copilot-welcome"><Sparkles size={28} /><h3>Follow the source, not just the suggestion.</h3><p>This scripted example shows a reviewable graph proposal. Use the sample statement below; arbitrary text is not analysed in this public demonstration.</p><button className="assistant-example" onClick={() => setDraft(examplePrompt)}><span>Use sample statement</span><strong>{examplePrompt}</strong></button></div>
+      {messages.map((message, index) => <div className="copilot-turn" key={index}><div className="copilot-question"><small>INVESTIGATOR</small><p>{message.question}</p></div><div className="copilot-response"><span className="eyebrow">SUTRA Copilot · scripted response</span><p>{message.supported ? "Sample proposal: Rahul, Park Street and 12 August form three reviewable items with two proposed relationships. The source is a reported statement, not proof that the meeting occurred." : "This public demo only supports the displayed sample statement. No entities were extracted from your message and no graph was changed. Open the live console to query stored evidence."}</p>{message.supported && <div className="workspace-action-row"><button className="text-button" onClick={() => onOpenEvidence("E-121")}>Inspect E-121</button><button className="button button--primary" onClick={applyGraph}>{applied ? "Open proposed graph" : "Apply sample proposal & open graph"}</button></div>}</div></div>)}</div>
+      <form className="copilot-composer" onSubmit={submit}><label htmlFor="demo-copilot-question">Sample observation</label><textarea id="demo-copilot-question" value={draft} maxLength={2000} onChange={e => setDraft(e.target.value)} placeholder={examplePrompt} /><div><small>Demo changes stay in browser session state; nothing is uploaded.</small><button className="button button--primary" disabled={!draft.trim()}><Send size={16} /> Review statement</button></div></form></article>
+      <aside className="copilot-context"><section className="panel"><div className="panel__header"><h3>Supporting record</h3><FileSearch size={17} /></div><div className="copilot-panel-body"><article className="copilot-source"><strong>{evidence.documentRef} · {evidence.id}</strong><span>{evidence.status} · Synthetic source</span><p>{evidence.excerpt}</p><time>{evidence.timestamp}</time><button className="text-button" onClick={() => onOpenEvidence(evidence.id)}>Open evidence</button></article></div></section>
+      <section className="panel"><div className="panel__header"><h3>Suggested review</h3><Sparkles size={17} /></div><div className="copilot-panel-body"><p>Corroborate the reported meeting against independent records. Identity, place and timing remain subject to review.</p><div className="copilot-actions"><button className="button button--quiet" onClick={onOpenNetwork}><Network size={16} /> Explore sample network</button><button className="button button--quiet" onClick={onOpenTimeline}>Open sample timeline</button></div></div></section>
+      <section className="copilot-limitations"><strong>Uncertainty stays visible</strong><ul><li>This is a fixed example, not general entity extraction.</li><li>Source-backed, inferred and hypothesis records are not interchangeable.</li><li>No automated accusation, voice input or multilingual analysis is performed.</li></ul></section></aside>
+    </section>
+  </div>;
 }

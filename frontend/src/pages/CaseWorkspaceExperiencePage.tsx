@@ -3,6 +3,8 @@ import { EvidenceList, TimelineFeed } from "../features/demo/ExperienceWidgets";
 import { useDemoExperience } from "../features/demo/DemoExperienceProvider";
 import { formatDate, titleCase } from "../lib/format";
 
+import { DemoUploadGate } from "../components/DemoUploadGate";
+
 export type WorkspaceTab = "overview" | "entities" | "network" | "timeline" | "evidence" | "hypotheses" | "assistant";
 
 const tabs: Array<{ id: WorkspaceTab; label: string }> = [
@@ -30,6 +32,7 @@ export function CaseWorkspaceExperiencePage({
   onNavigateTab,
   onOpenNetwork,
   onOpenEvidence,
+  onOpenLive,
 }: {
   caseId: string;
   activeTab?: WorkspaceTab;
@@ -37,6 +40,7 @@ export function CaseWorkspaceExperiencePage({
   onNavigateTab: (tab: WorkspaceTab) => void;
   onOpenNetwork: () => void;
   onOpenEvidence: (evidenceId?: string) => void;
+  onOpenLive: () => void;
 }) {
   const { cases, evidence, activities, selectedActivityId, selectActivity, selectCase, focusGraph } = useDemoExperience();
   const activeCase = cases.find((item) => item.id === caseId) ?? cases[0];
@@ -56,6 +60,7 @@ export function CaseWorkspaceExperiencePage({
         <button className="text-button" onClick={onBack}><ArrowLeft size={15} /> All cases</button>
         <div className="workspace-case-header__main"><div><span className="eyebrow">{activeCase.reference} - {activeCase.category}</span><h2>{activeCase.title}</h2><p>{activeCase.description}</p><span className="workspace-case-header__updated">Updated {formatDate(activeCase.updatedAt, true)} - Owner {activeCase.owner}</span></div><div className="workspace-case-header__tags"><span className={`priority priority--${activeCase.priority.toLowerCase()}`}>{titleCase(activeCase.priority)}</span><span className={`experience-status experience-status--${activeCase.status.toLowerCase()}`}>{titleCase(activeCase.status)}</span></div></div>
       </section>
+      <DemoUploadGate onOpenLive={onOpenLive} />
       <nav className="experience-tabs" aria-label="Case workspace areas">{tabs.map((tab) => <button key={tab.id} className={activeTab === tab.id ? "experience-tabs__tab experience-tabs__tab--active" : "experience-tabs__tab"} onClick={() => selectWorkspaceTab(tab.id)}>{tab.label}</button>)}</nav>
       {activeTab === "overview" && <section className="workspace-overview">
         <div className="experience-stat-grid"><article><span>Entities</span><strong>{activeCase.entityCount}</strong><small>Across reviewed context</small></article><article><span>Evidence references</span><strong>{caseEvidence.length || activeCase.evidenceCount}</strong><small>Source-aware records</small></article><article><span>Open activity</span><strong>{caseActivities.length}</strong><small>Local timeline events</small></article></div>

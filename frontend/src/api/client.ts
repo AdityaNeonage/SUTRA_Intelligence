@@ -76,6 +76,7 @@ async function request<T>(
     : await response.text().catch(() => null);
 
   if (!response.ok) {
+    if (response.status === 401 && token) window.dispatchEvent(new CustomEvent("sutra:session-expired", { detail: token }));
     const error = extractError(payload, `Request failed with status ${response.status}.`);
     throw new ApiClientError(error.message, response.status, error.code, error.details);
   }
@@ -130,10 +131,10 @@ export const sutraApi = {
     return request<unknown>("/api/analytics/timeline", {}, token, { case_id: caseId });
   },
 
-  uploadEvidence(token: string, file: File, caseId?: string) {
+  uploadEvidence(token: string, file: File, caseId?: string, sourceType?: string) {
     const body = new FormData();
     body.append("file", file);
-    return request<EvidenceUploadResponse>("/api/ingestion/upload", { method: "POST", body }, token, { case_id: caseId });
+    return request<EvidenceUploadResponse>("/api/ingestion/upload", { method: "POST", body }, token, { case_id: caseId, source_type: sourceType });
   },
 
   listIngestions(token: string, caseId?: string) {

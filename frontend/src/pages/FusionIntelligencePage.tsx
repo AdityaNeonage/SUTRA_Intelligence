@@ -21,7 +21,9 @@ import {
 } from "lucide-react";
 import "../styles/fusion.css";
 
-type FusionMode = "hotspots" | "resolution" | "pipeline";
+import { FusionMapWorkbench } from "../features/fusion/FusionMapWorkbench";
+
+type FusionMode = "map" | "hotspots" | "resolution" | "pipeline";
 type Severity = "Critical" | "High" | "Medium" | "Low";
 type ReviewState = "Pending review" | "Confirmed match" | "Kept separate";
 
@@ -250,10 +252,11 @@ function PipelineWorkbench({ onOpenEvidence }: { onOpenEvidence: () => void }) {
   );
 }
 
-export function FusionIntelligencePage({ onOpenNetwork, onOpenEvidence }: { onOpenNetwork: () => void; onOpenEvidence: () => void }) {
-  const [mode, setMode] = useState<FusionMode>("hotspots");
+export function FusionIntelligencePage({ onOpenNetwork, onOpenEvidence }: { onOpenNetwork: () => void; onOpenEvidence: (id?: string) => void }) {
+  const [mode, setMode] = useState<FusionMode>("map");
   const modes: Array<{ id: FusionMode; label: string; description: string; icon: typeof MapPin }> = [
-    { id: "hotspots", label: "Hotspot Intelligence", description: "Explore synthetic geographic convergence", icon: MapPin },
+    { id: "map", label: "Investigation Map", description: "Link sample events with graph entities", icon: MapPin },
+    { id: "hotspots", label: "Signal zones (demo)", description: "Legacy schematic, not a geographic map", icon: MapPin },
     { id: "resolution", label: "Entity Resolution", description: "Review possible cross-case matches", icon: ScanSearch },
     { id: "pipeline", label: "Evidence Pipeline", description: "Trace records into graph insights", icon: Workflow },
   ];
@@ -261,14 +264,15 @@ export function FusionIntelligencePage({ onOpenNetwork, onOpenEvidence }: { onOp
   return (
     <div className="experience-page fusion-page page-stack">
       <section className="experience-page-header fusion-page__header">
-        <div><span className="eyebrow">Integrated from the collaborator build</span><h2>Intelligence Fusion Lab.</h2><p>Bring location patterns, entity-resolution candidates, and the evidence pipeline into the same evidence-first investigation workspace.</p></div>
+        <div><span className="eyebrow">Evidence • location • relationships</span><h2>Intelligence Fusion Center</h2><p>Bring location patterns, entity-resolution candidates, and the evidence pipeline into the same evidence-first investigation workspace.</p></div>
         <div className="fusion-page__status"><i /><span><strong>Fusion services</strong><small>Synthetic demo ready</small></span></div>
       </section>
 
-      <nav className="fusion-mode-tabs" aria-label="Fusion Lab modes">
+      <nav className="fusion-mode-tabs" aria-label="Intelligence Fusion Center modes">
         {modes.map(({ id, label, description, icon: Icon }) => <button key={id} className={mode === id ? "is-active" : ""} onClick={() => setMode(id)}><Icon size={19} /><span><strong>{label}</strong><small>{description}</small></span></button>)}
       </nav>
 
+      {mode === "map" && <FusionMapWorkbench onOpenNetwork={onOpenNetwork} onOpenEvidence={onOpenEvidence} />}
       {mode === "hotspots" && <HotspotWorkbench onOpenNetwork={onOpenNetwork} />}
       {mode === "resolution" && <ResolutionWorkbench onOpenNetwork={onOpenNetwork} />}
       {mode === "pipeline" && <PipelineWorkbench onOpenEvidence={onOpenEvidence} />}

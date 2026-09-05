@@ -9,8 +9,10 @@ export function LiveNetworkPage({
   token,
   caseId,
   onSelectCase,
+  entityId,
 }: {
   token: string;
+  entityId?: string;
   caseId?: string;
   onSelectCase: (caseId: string) => void;
 }) {
@@ -47,7 +49,7 @@ export function LiveNetworkPage({
         <section className="network-workspace">
           <article className="panel graph-panel">
             <div className="graph-panel__header"><div><span className="panel__eyebrow">Live graph</span><h3><Network size={16} /> {nodes.length} entities · {edges.length} relationships</h3></div><button className="button button--quiet" onClick={() => graphRef.current?.fit()}><Maximize2 size={15} /> Fit graph</button></div>
-            <NetworkGraph ref={graphRef} nodes={nodes} edges={edges} selectedEdgeId={selectedEdgeId} onEdgeSelect={setSelectedEdgeId} onCanvasTap={() => setSelectedEdgeId(undefined)} />
+            <NetworkGraph ref={graphRef} nodes={nodes} edges={edges} selectedNodeId={entityId} emphasisNodeIds={entityId ? [entityId, ...edges.filter(edge => edge.source === entityId || edge.target === entityId).flatMap(edge => [edge.source, edge.target])] : undefined} selectedEdgeId={selectedEdgeId} onEdgeSelect={setSelectedEdgeId} onCanvasTap={() => setSelectedEdgeId(undefined)} />
             <div className="graph-legend"><span><i className="legend-line legend-line--verified" /> Verified</span><span><i className="legend-line legend-line--inferred" /> Inferred</span><span><i className="legend-line legend-line--hypothesis" /> Hypothesis</span></div>
           </article>
           <WhyPanel edge={selectedEdge} source={source} target={target} />

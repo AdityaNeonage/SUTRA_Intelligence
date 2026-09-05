@@ -4,11 +4,13 @@ import { useDemoExperience } from "../features/demo/DemoExperienceProvider";
 import { formatDate, titleCase } from "../lib/format";
 import type { DemoCase, DemoPriority } from "../features/demo/types";
 
+import { DemoUploadGate } from "../components/DemoUploadGate";
+
 type SortMode = "recent" | "priority" | "title";
 
 const priorityWeight: Record<DemoPriority, number> = { CRITICAL: 4, HIGH: 3, MEDIUM: 2, LOW: 1 };
 
-export function CasesPage({ onOpenCase }: { onOpenCase: (caseId: string) => void }) {
+export function CasesPage({ onOpenCase, onOpenLive }: { onOpenCase: (caseId: string) => void; onOpenLive: () => void }) {
   const { cases, createCase } = useDemoExperience();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"ALL" | DemoCase["status"]>("ALL");
@@ -46,6 +48,7 @@ export function CasesPage({ onOpenCase }: { onOpenCase: (caseId: string) => void
         <div><span className="eyebrow">Case management</span><h2>Cases, with context ready to inspect.</h2><p>Search, filter, sort, and open synthetic case workspaces. Changes in this view remain local to the Phase 2 demonstration.</p></div>
         <button className="button button--primary" onClick={() => setIsCreating(true)}><Plus size={17} /> New case</button>
       </section>
+      <DemoUploadGate onOpenLive={onOpenLive} />
       <section className="panel experience-filter-bar" aria-label="Case filters">
         <label className="input-with-icon experience-search"><Search size={16} /><input className="input" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search case ID, title, category, owner..." /></label>
         <label className="experience-filter-select"><Filter size={15} /><select className="input" value={status} onChange={(event) => setStatus(event.target.value as typeof status)}><option value="ALL">All statuses</option><option value="ACTIVE">Active</option><option value="REVIEW">Review</option><option value="ARCHIVED">Archived</option></select></label>

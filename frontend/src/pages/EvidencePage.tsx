@@ -27,14 +27,14 @@ export function EvidencePage({
     <div className="experience-page page-stack">
       <section className="experience-page-header"><div><span className="eyebrow">Evidence</span><h2>Every signal keeps a source reference.</h2><p>Confidence and evidence status are visible together. Inference is not displayed as verified fact.</p></div><div className="experience-header-stat"><ShieldCheck size={17} /><span>{evidence.length} references</span></div></section>
       <section className="panel evidence-upload-preview">
-        <input ref={fileInput} type="file" multiple accept=".csv,.json,.txt,.md,.pdf,.docx,.xlsx" onChange={(event) => setSelectedFiles(Array.from(event.target.files ?? []))} />
+        <input ref={fileInput} type="file" multiple accept=".csv,.json,.txt,.md,.pdf,.docx" onChange={(event) => setSelectedFiles(Array.from(event.target.files ?? []))} />
         <button type="button" className="evidence-dropzone" onClick={() => fileInput.current?.click()}>
           <span><UploadCloud size={24} /></span>
-          <div><strong>Upload evidence files</strong><small>CSV, JSON, TXT, Markdown, PDF, DOCX, or XLSX · up to 25 MB per file</small></div>
+          <div><strong>Upload evidence files</strong><small>CSV, JSON, TXT, Markdown, PDF, or DOCX · up to 25 MB per file</small></div>
           <em>{selectedFiles.length ? `${selectedFiles.length} file${selectedFiles.length === 1 ? "" : "s"} selected` : "Choose files"}</em>
         </button>
         <div className="evidence-upload-preview__footer">
-          <p><Database size={15} /> Sign in to process selected files and commit their metadata, extracted records, entities, and relationships to the SUTRA database.</p>
+          <p><Database size={15} /> Preview only: nothing is uploaded here. Open secure upload, sign in and select the files again to process them into your case.</p>
           <button className="button button--primary" type="button" onClick={onOpenLiveEvidence}>Open secure upload <ArrowRight size={15} /></button>
         </div>
       </section>

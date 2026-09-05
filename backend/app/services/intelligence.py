@@ -363,6 +363,8 @@ class IntelligenceService:
         source_type: str | None = None,
         request_id: str | None = None,
     ) -> dict[str, Any]:
+        if Path(upload.filename or "").suffix.lower() in {".xlsx", ".xls"}:
+            raise APIError(415, "UNSUPPORTED_SPREADSHEET", "XLSX/XLS extraction is not supported. Export the sheet as CSV.")
         payload = await upload.read()
         if not payload:
             raise APIError(422, "EMPTY_UPLOAD", "The uploaded file is empty.")
@@ -440,6 +442,7 @@ class IntelligenceService:
                 entity_ids.update(result[1])
                 relationship_ids.extend(result[2])
             self.run_entity_resolution(session)
+            batch.document_count = len(document_ids)
             batch.status = StoredIngestionStatus.COMPLETED.value
             batch.completed_at = utc_now()
             after = self.capture_snapshot(session, label="after_ingestion", case_id=case_id)

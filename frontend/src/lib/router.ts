@@ -16,9 +16,9 @@ export type SutraRoute =
   | { name: "system" }
   | { name: "live-dashboard" }
   | { name: "live-cases"; caseId?: string }
-  | { name: "live-network"; caseId?: string }
-  | { name: "live-evidence" }
-  | { name: "live-data-store" }
+  | { name: "live-network"; caseId?: string; entityId?: string }
+  | { name: "live-evidence"; caseId?: string }
+  | { name: "live-data-store"; caseId?: string; ingestionId?: string; documentId?: string }
   | { name: "live-assistant" }
   | { name: "live-analytics"; caseId?: string }
   | { name: "live-system" };
@@ -36,9 +36,9 @@ export function parseSutraRoute(pathname = trimmedPathname()): SutraRoute {
   if (segments[0] === "login") return { name: "login" };
   if (segments[0] === "live" && (segments[1] === undefined || segments[1] === "dashboard")) return { name: "live-dashboard" };
   if (segments[0] === "live" && segments[1] === "cases") return { name: "live-cases", caseId: segments[2] };
-  if (segments[0] === "live" && segments[1] === "network") return { name: "live-network", caseId: query.get("case") ?? undefined };
-  if (segments[0] === "live" && segments[1] === "evidence") return { name: "live-evidence" };
-  if (segments[0] === "live" && segments[1] === "data-store") return { name: "live-data-store" };
+  if (segments[0] === "live" && segments[1] === "network") return { name: "live-network", caseId: query.get("case") ?? undefined, entityId: query.get("entity") ?? undefined };
+  if (segments[0] === "live" && segments[1] === "evidence") return { name: "live-evidence", caseId: query.get("case") ?? undefined };
+  if (segments[0] === "live" && segments[1] === "data-store") return { name: "live-data-store", caseId: query.get("case") ?? undefined, ingestionId: query.get("batch") ?? undefined, documentId: query.get("record") ?? undefined };
   if (segments[0] === "live" && segments[1] === "assistant") return { name: "live-assistant" };
   if (segments[0] === "live" && segments[1] === "analytics") return { name: "live-analytics", caseId: query.get("case") ?? undefined };
   if (segments[0] === "live" && segments[1] === "system") return { name: "live-system" };
@@ -71,7 +71,7 @@ export function useSutraRouter() {
       window.history[options?.replace ? "replaceState" : "pushState"]({}, "", nextPath);
     }
     setRoute(parseSutraRoute(nextPath));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   }, []);
 
   return { route, navigate };

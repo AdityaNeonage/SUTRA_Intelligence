@@ -66,7 +66,7 @@ const canvasNodes: CanvasNode[] = [
 const nodeColor = {
   cyan: "#79e8f6",
   blue: "#79a7ff",
-  red: "#ff4d5f",
+  red: "#c084fc",
 };
 
 function NetworkCanvas({ reducedMotion }: { reducedMotion: boolean }) {
@@ -112,7 +112,7 @@ function NetworkCanvas({ reducedMotion }: { reducedMotion: boolean }) {
           const threshold = source.focal || target.focal ? 260 : 182;
           if (distance > threshold) continue;
           const alpha = (1 - distance / threshold) * (source.focal || target.focal ? 0.42 : 0.2);
-          context.strokeStyle = source.focal || target.focal ? `rgba(255, 77, 95, ${alpha})` : `rgba(98, 218, 239, ${alpha})`;
+          context.strokeStyle = source.focal || target.focal ? `rgba(192, 132, 252, ${alpha})` : `rgba(98, 218, 239, ${alpha})`;
           context.beginPath();
           context.moveTo(source.x, source.y);
           context.lineTo(target.x, target.y);
@@ -184,7 +184,7 @@ function NetworkCanvas({ reducedMotion }: { reducedMotion: boolean }) {
   return (
     <div className="sutra-landing-hero__canvas-host" ref={hostRef} aria-hidden="true">
       <canvas ref={canvasRef} className="sutra-landing-hero__canvas" />
-      <div className="sutra-landing-hero__focal-label">ACTIVE CONNECTION</div>
+      <div className="sutra-landing-hero__focal-label">SYNTHETIC RELATIONSHIP</div>
     </div>
   );
 }
@@ -336,11 +336,11 @@ export function LandingPage({ onExplorePlatform, onWatchDemo, onOpenLogin, acces
         <div className="sutra-landing-hero__inner" id="sutra-top" style={heroContentStyle}>
           <div className="sutra-landing-hero__copy">
             <div className="sutra-landing-kicker"><span /> Evidence-aware intelligence for investigators</div>
-            <h1 id="sutra-landing-title">AI POWERED <em>CYBERCRIME</em> NETWORK ANALYSIS</h1>
-            <p>SUTRA connects authorised case evidence, relationships, and explainable analytical signals into a focused investigative workspace.</p>
+            <h1 id="sutra-landing-title">FRAGMENTED EVIDENCE <span className="hero-transform-arrow" aria-hidden="true">→</span><em>INVESTIGATION GRAPH</em></h1>
+            <p>Transform evidence into structured, reviewable investigation intelligence.</p>
             <div className="sutra-landing-hero__actions">
-              <Button variant="primary" size="lg" trailingIcon={<ArrowRight size={18} />} onClick={explorePlatform}>Explore Platform</Button>
-              <Button variant="ghost" size="lg" leadingIcon={<Play size={16} fill="currentColor" />} onClick={watchDemo}>Watch Demo</Button>
+              <Button variant="primary" size="lg" trailingIcon={<ArrowRight size={18} />} onClick={explorePlatform}>Open Sample Investigation</Button>
+              <Button variant="ghost" size="lg" leadingIcon={<Play size={16} fill="currentColor" />} onClick={() => scrollTo("sutra-workflow")}>See How It Works</Button>
             </div>
             <div className="sutra-landing-hero__proof">
               <span><CheckCircle2 size={15} /> Evidence provenance in view</span>
@@ -348,7 +348,7 @@ export function LandingPage({ onExplorePlatform, onWatchDemo, onOpenLogin, acces
             </div>
           </div>
           <aside className="sutra-landing-hero__status-card" aria-label="Demo system snapshot">
-            <div className="sutra-landing-hero__status-head"><span>NETWORK PULSE</span><StatusIndicator status="online">Monitoring</StatusIndicator></div>
+            <div className="sutra-landing-hero__status-head"><span>NETWORK PULSE</span><StatusIndicator status="online">Demo</StatusIndicator></div>
             <strong>12<span> active links</span></strong>
             <div className="sutra-landing-pulse-bars" aria-hidden="true"><i /><i /><i /><i /><i /><i /><i /><i /></div>
             <div className="sutra-landing-hero__status-list"><span>Evidence-backed <b>08</b></span><span>Needs review <b>04</b></span></div>
@@ -391,7 +391,7 @@ export function LandingPage({ onExplorePlatform, onWatchDemo, onOpenLogin, acces
       </section>
 
       <section className="sutra-landing-section sutra-network-section" aria-labelledby="sutra-network-title">
-        <Reveal direction="left"><div className="sutra-network-section__copy"><span className="sutra-landing-overline">Network intelligence</span><h2 id="sutra-network-title">Find the connection, then inspect why it exists.</h2><p>Zoom into relationship paths, distinguish source-backed links from analytical context, and open the relevant evidence without losing your place in the investigation.</p><ul><li><Waypoints size={17} /> Focus paths between selected entities</li><li><SearchCheck size={17} /> Surface supporting records and confidence</li><li><MapPin size={17} /> Keep people, devices, locations, and accounts in context</li></ul><Button variant="secondary" trailingIcon={<ArrowRight size={16} />} onClick={explorePlatform}>Open the network explorer</Button></div></Reveal>
+        <Reveal direction="left"><div className="sutra-network-section__copy"><span className="sutra-landing-overline">Network intelligence</span><h2 id="sutra-network-title">Find the connection, then inspect why it exists.</h2><p>Zoom into relationship paths, distinguish source-backed links from analytical context, and open the relevant evidence without losing your place in the investigation.</p><ul><li><Waypoints size={17} /> Focus paths between selected entities</li><li><SearchCheck size={17} /> Surface supporting records and confidence</li><li><MapPin size={17} /> Keep people, devices, locations, and accounts in context</li></ul><Button variant="secondary" trailingIcon={<ArrowRight size={16} />} onClick={watchDemo}>Open the network explorer</Button></div></Reveal>
         <Reveal direction="right" delay={120}><Panel tone="elevated" padded={false} className="sutra-network-section__visual"><div className="sutra-network-section__visual-head"><div><span>RELATIONSHIP MAP</span><strong>Case 104 - Synthetic demo</strong></div><Chip tone="danger">1 focal link</Chip></div><MiniNetworkFigure /></Panel></Reveal>
       </section>
 
@@ -406,7 +406,7 @@ export function LandingPage({ onExplorePlatform, onWatchDemo, onOpenLogin, acces
 
       <section className="sutra-landing-section sutra-assistant-section">
         <Reveal direction="left"><Panel tone="default" padded={false} className="sutra-assistant-preview"><div className="sutra-assistant-preview__header"><div className="sutra-assistant-preview__bot"><Bot size={18} /></div><div><span>AI ASSISTANT - DEMO MODE</span><strong>Structure a note, then review every result.</strong></div><StatusIndicator status="active">Ready</StatusIndicator></div><div className="sutra-assistant-preview__conversation"><p className="is-user">I met Rahul at Park Street on 12 August.</p><div className="is-assistant"><span>Analysing statement...</span><div><Chip tone="cyan">Rahul - Person</Chip><Chip tone="cyan">Park Street - Location</Chip><Chip tone="neutral">12 August - Date</Chip></div><p><Sparkles size={15} /> 3 entities identified - 2 draft relationships created</p></div></div></Panel></Reveal>
-        <Reveal direction="right" delay={100}><div className="sutra-assistant-section__copy"><span className="sutra-landing-overline">Analyst-controlled assistance</span><h2>Turn narrative into a reviewable starting point.</h2><p>The assistant can demonstrate entity and relationship extraction using synthetic local state. Each result is presented with review controls and is ready for a later backend intelligence adapter.</p><div className="sutra-assistant-section__checks"><span><CheckCircle2 size={17} /> Citations and provenance visible</span><span><CheckCircle2 size={17} /> Graph actions are explicit</span><span><CheckCircle2 size={17} /> No autonomous conclusions</span></div><Button variant="secondary" trailingIcon={<ArrowRight size={16} />} onClick={explorePlatform}>Explore assistant workspace</Button></div></Reveal>
+        <Reveal direction="right" delay={100}><div className="sutra-assistant-section__copy"><span className="sutra-landing-overline">Analyst-controlled assistance</span><h2>Turn narrative into a reviewable starting point.</h2><p>The public assistant demonstrates a fixed synthetic statement with explicit graph actions. The authenticated Copilot queries stored relationships and returns source records; neither mode is a generative LLM.</p><div className="sutra-assistant-section__checks"><span><CheckCircle2 size={17} /> Citations and provenance visible</span><span><CheckCircle2 size={17} /> Graph actions are explicit</span><span><CheckCircle2 size={17} /> No autonomous conclusions</span></div><Button variant="secondary" trailingIcon={<ArrowRight size={16} />} onClick={explorePlatform}>Explore a sample investigation</Button></div></Reveal>
       </section>
 
       <section className="sutra-landing-section sutra-security-section">
@@ -418,7 +418,7 @@ export function LandingPage({ onExplorePlatform, onWatchDemo, onOpenLogin, acces
         </div>
       </section>
 
-      <Reveal className="sutra-landing-final-cta" direction="scale"><div><span className="sutra-landing-overline">SUTRA intelligence platform</span><h2>Start with the evidence. Follow the connection. Keep the why in view.</h2></div><div><Button variant="primary" size="lg" trailingIcon={<ArrowRight size={18} />} onClick={explorePlatform}>Explore Platform</Button><Button variant="ghost" size="lg" onClick={onOpenLogin}>{accessLabel}</Button></div></Reveal>
+      <Reveal className="sutra-landing-final-cta" direction="scale"><div><span className="sutra-landing-overline">SUTRA intelligence platform</span><h2>Start with the evidence. Follow the connection. Keep the why in view.</h2></div><div><Button variant="primary" size="lg" trailingIcon={<ArrowRight size={18} />} onClick={explorePlatform}>Open Sample Investigation</Button><Button variant="ghost" size="lg" onClick={onOpenLogin}>{accessLabel}</Button></div></Reveal>
 
       <footer className="sutra-landing-footer"><span><ShieldCheck size={15} /> SUTRA - Secure Unified Threat &amp; Relationship Analytics</span><span>Decision support only - Synthetic demonstration data</span></footer>
     </main>

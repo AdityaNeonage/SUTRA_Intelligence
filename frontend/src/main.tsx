@@ -5,6 +5,7 @@ import "./styles.css";
 import "./styles/experience.css";
 import "./features/demo/demo-experience.css";
 import "./styles/console-experience.css";
+import "./styles/investigation-phase.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode><App /></StrictMode>,

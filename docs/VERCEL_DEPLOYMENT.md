@@ -95,9 +95,19 @@ laptop and local development servers do not need to remain running.
 3. Sign in with `SUTRA_DEMO_USER_EMAIL` and `SUTRA_DEMO_USER_PASSWORD`.
 4. The live dashboard reads cases from PostgreSQL. If automatic seeding is off
    and the database is empty, select **Load demo data** as an administrator.
-5. Use **Live Cases**, **Live Network**, **Live Analytics**, and **System Health**
-   to query backend data. The graph's relationship panel preserves evidence
-   status, confidence, derivation, and supporting-record identifiers.
+5. Use **Evidence Upload** to send CSV, JSON, TXT, Markdown, PDF, DOCX, or XLSX
+   evidence through the real backend pipeline. The supplied `accounts.csv`,
+   `transactions.csv`, and `case_study.md` files are supported directly.
+6. Open **Data Store** to inspect upload receipts, hashes, extracted database
+   records, source previews, and processing metadata.
+7. Open **Live Network** after uploading the two CSV files. SUTRA recognises
+   `account_id`, `src_account`, `dst_account`, `txn_id`, `amount`, `timestamp`,
+   and `is_fraud`, creating account nodes and `TRANSFERRED_TO` relationships.
+8. Use **Pari AI** to query the stored evidence graph. Answers include involved
+   entity/edge counts, evidence records, and limitations.
+9. **Live Analytics** and **System Health** provide graph analysis and runtime
+   readiness. Relationship panels preserve evidence status, confidence,
+   derivation, and supporting-record identifiers.
 
 Useful checks:
 

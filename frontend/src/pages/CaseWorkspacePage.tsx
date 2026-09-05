@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, CalendarClock, Files, GitCompareArrows, Network, Tag } from "lucide-react";
-import { useCaseDetail, useCases, useRelatedCases, useTimeline } from "../api/queries";
+import { useCaseDetail, useCases, useRelatedCases, useTimeline, useIngestions } from "../api/queries";
 import { EmptyState, ErrorState, LoadingState } from "../components/DataState";
+import { EvidenceIntake } from "../components/EvidenceIntake";
 import { StatusPill } from "../components/StatusPill";
 import { formatDate, formatPercent, titleCase } from "../lib/format";
 
@@ -10,12 +11,17 @@ export function CaseWorkspacePage({
   caseId,
   onSelectCase,
   onExploreNetwork,
+  onOpenStore,
 }: {
   token: string;
   caseId?: string;
   onSelectCase: (caseId: string) => void;
   onExploreNetwork: () => void;
+  onOpenStore: (caseId: string, ingestionId?: string) => void;
 }) {
+  const [intakeOpen, setIntakeOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const batches = useIngestions(token, caseId);
   const cases = useCases(token);
   const caseDetail = useCaseDetail(token, caseId);
   const relatedCases = useRelatedCases(token, caseId);
@@ -24,6 +30,12 @@ export function CaseWorkspacePage({
   useEffect(() => {
     if (!caseId && cases.data?.[0]?.id) onSelectCase(cases.data[0].id);
   }, [caseId, cases.data, onSelectCase]);
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("focus") === "timeline" && caseDetail.data) {
+      document.getElementById("case-timeline")?.scrollIntoView({ block: "start" });
+    }
+  }, [caseDetail.data]);
 
   if (cases.isLoading || (caseId && caseDetail.isLoading)) return <LoadingState label="Opening case workspace..." />;
   if (cases.isError) return <ErrorState error={cases.error} onRetry={() => void cases.refetch()} title="Cases could not be retrieved" />;
@@ -39,11 +51,14 @@ export function CaseWorkspacePage({
         <div className="case-hero__identity"><div className="eyebrow">Case workspace</div><h2>{activeCase.title}</h2><p>{activeCase.description || "No case description has been supplied."}</p><div className="case-meta"><span><Files size={14} /> {activeCase.case_number}</span><span><CalendarClock size={14} /> Opened {formatDate(activeCase.created_at)}</span><span><Tag size={14} /> {titleCase(activeCase.classification)}</span></div></div>
         <div className="case-hero__actions"><StatusPill status={activeCase.status} /><span className={`priority priority--${activeCase.priority.toLowerCase()}`}>{titleCase(activeCase.priority)}</span><button className="button button--primary" onClick={onExploreNetwork}><Network size={17} /> Open network</button></div>
       </section>
+      <button className="button button--primary" onClick={() => setIntakeOpen(true)}>Upload Evidence</button>
+      <p>{batches.data?.length ?? 0} upload batches / {batches.data?.reduce((n, item) => n + item.document_count, 0) ?? 0} stored evidence records in this case</p>
+      {intakeOpen && <EvidenceIntake key={caseId} token={token} caseId={caseId} onBusyChange={setBusy} onOpenStore={id => onOpenStore(caseId, id)} />}
       <section className="case-layout">
         <article className="panel case-selector-panel">
           <div className="panel__header"><div><span className="panel__eyebrow">Authorised portfolio</span><h3>Switch case</h3></div><span className="panel__hint">{cases.data?.length ?? 0}</span></div>
           <div className="case-selector-list">
-            {cases.data?.map((item) => <button key={item.id} className={`case-selector${item.id === activeCase.id ? " case-selector--active" : ""}`} onClick={() => onSelectCase(item.id)}><strong>{item.case_number}</strong><span>{item.title}</span><StatusPill status={item.status} /></button>)}
+            {cases.data?.map((item) => <button key={item.id} disabled={busy} className={`case-selector${item.id === activeCase.id ? " case-selector--active" : ""}`} onClick={() => onSelectCase(item.id)}><strong>{item.case_number}</strong><span>{item.title}</span><StatusPill status={item.status} /></button>)}
           </div>
         </article>
         <div className="case-main-column">
@@ -57,7 +72,7 @@ export function CaseWorkspacePage({
             </dl>
           </article>
           <article className="panel">
-            <div className="panel__header"><div><span className="panel__eyebrow">Timeline intelligence</span><h3>Reported activity</h3></div></div>
+            <div className="panel__header"><div><span className="panel__eyebrow">Timeline intelligence</span><h3 id="case-timeline">Reported activity</h3></div></div>
             {timeline.isLoading ? <LoadingState compact label="Loading timeline..." /> : timeline.isError ? <ErrorState error={timeline.error} onRetry={() => void timeline.refetch()} title="Timeline unavailable" /> : timeline.data?.length ? (
               <ol className="event-timeline">{timeline.data.slice(0, 8).map((point, index) => <li key={`${point.timestamp}-${index}`}><span className="event-timeline__dot" /><div><strong>{point.label}</strong><p>{formatDate(point.timestamp, true)}</p></div><span>{point.count} event{point.count === 1 ? "" : "s"}</span></li>)}</ol>
             ) : <EmptyState title="No timeline events returned" description="Ingested events for this case will appear here once they are available." />}
