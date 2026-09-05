@@ -104,8 +104,6 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     payload = _payload(result)
     _print_payload(payload, as_json=args.json)
-    # A transparent "not measured" report is still a successful command; it
-    # must not be represented as a synthetic failed/zero score.
     return 0
 
 
