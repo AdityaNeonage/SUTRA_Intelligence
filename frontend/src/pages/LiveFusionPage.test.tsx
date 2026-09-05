@@ -4,6 +4,8 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { LiveFusionPage } from "./LiveFusionPage";
 
+vi.mock("../features/teammate/components/CrimeHotspotMap", () => ({ default: () => <p>Teammate hotspot map</p> }));
+
 vi.mock("./FusionIntelligencePage", () => ({
   FusionIntelligencePage: ({ onOpenNetwork, onOpenEvidence }: { onOpenNetwork: () => void; onOpenEvidence: (id: string) => void }) => {
     const [selected, setSelected] = useState(false);
@@ -33,6 +35,8 @@ it("labels the sample data and preserves map state when opening and returning fr
   await act(async () => root.render(<LiveFusionPage onOpenLiveEvidence={vi.fn()} />));
   expect(host.textContent).toContain("Authenticated workspace");
   expect(host.textContent).toContain("not your uploaded case evidence");
+  expect(host.textContent).toContain("Teammate hotspot map");
+  await click("Linked evidence map");
   await click("Select marker");
   await click("Show network");
   expect(host.textContent).toContain("Sample graph view");
@@ -45,6 +49,7 @@ it("labels the sample data and preserves map state when opening and returning fr
 it("opens the exact sample citation and provides a real-upload exit", async () => {
   const openLive = vi.fn();
   await act(async () => root.render(<LiveFusionPage onOpenLiveEvidence={openLive} />));
+  await click("Linked evidence map");
   await click("Open source");
   expect(host.textContent).toContain("Sample source: E-121");
   await click("Open secure upload");

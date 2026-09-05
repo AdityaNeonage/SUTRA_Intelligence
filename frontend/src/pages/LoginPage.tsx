@@ -20,19 +20,20 @@ export function LoginPage({ onAuthenticated, onOpenDemo }: { onAuthenticated: (s
   }
 
   return (
-    <main className="login-page">
+    <main className="login-page team-login">
       <div className="login-page__ambient login-page__ambient--one" />
       <div className="login-page__ambient login-page__ambient--two" />
       <section className="login-intro">
         <div className="brand brand--login">
-          <div className="brand__mark"><img className="brand__image" src="/sutra-hacker.png" alt="SUTRA hacker" /></div>
+          <div className="brand__mark"><img className="brand__image" src="/teammate-logo.jpeg" alt="SUTRA hacker" /></div>
           <div><strong>SUTRA</strong><span>SECURE UNIFIED THREAT &amp; RELATIONSHIP ANALYTICS</span></div>
         </div>
         <div className="login-intro__copy">
           <div className="eyebrow">Investigator decision-support platform</div>
-          <h1>Make relationships<br /><em>explainable.</em></h1>
+          <h1>Fragmented evidence.<br /><em>Connected intelligence.</em></h1>
           <p>Explore authorised case evidence, understand network connections, and keep the originating records in view.</p>
         </div>
+        <div className="team-login-graph" aria-hidden="true"><i /><i /><i /><i /><i /><span>Evidence → Entities → Connections</span></div>
         <div className="login-intro__principles">
           <div><ShieldCheck size={18} /><span><strong>Evidence-first</strong>Verified facts remain distinct from analytical inference.</span></div>
           <div><KeyRound size={18} /><span><strong>Access-controlled</strong>Every session is accountable to an authorised investigator.</span></div>
@@ -42,7 +43,7 @@ export function LoginPage({ onAuthenticated, onOpenDemo }: { onAuthenticated: (s
         <form className="login-panel" onSubmit={submit}>
           <div className="login-panel__header">
             <div className="eyebrow">Prototype · Real backend</div>
-            <h2>Your investigation starts here.</h2>
+            <h2>Enter your workspace.</h2>
             <p>Sign in to upload evidence, inspect stored records and follow the graph. The public sample does not require an account.</p>
           </div>
           <label className="field-label" htmlFor="email">Email address</label>

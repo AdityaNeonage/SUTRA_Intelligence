@@ -1,0 +1,169 @@
+/* Shared visual language from the teammate's src/index.css and Dashboard.tsx.
+   Existing page classes retain their behaviour, but no longer own the theme. */
+:root {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bg: #0a0710; --bg-deep: #080510;
+  --surface: #121018; --surface-raised: #1a1625; --surface-hover: #211b2b;
+  --line: #ffffff14; --line-bright: #ffffff30;
+  --text: #fdf4ff; --text-muted: #a09eab; --text-dim: #827b8d;
+  --cyan: #d946ef; --cyan-bright: #f0abfc; --violet: #a78bfa;
+  --intelligence: #d946ef; --intelligence-soft: #d946ef12;
+  --shadow: none;
+  background: #0a0710;
+}
+body { background: #0a0710; }
+::selection { background: #d946ef40; color: white; }
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: #0a0710; }
+::-webkit-scrollbar-thumb { background: #39303f; border-radius: 8px; }
+.team-ui { font-family: ui-sans-serif, system-ui, sans-serif; color: white; }
+.team-ui button { border-style: solid; }
+.team-ui a { text-decoration: none; }
+.team-ui svg { flex-shrink: 0; }
+.team-landing { overflow-x: clip; }
+.team-landing section[id] { scroll-margin-top: 72px; }
+.team-prototype-note { padding: 16px 24px; text-align: center; color: #c9bdd1; background: #161020; border-block: 1px solid #d946ef20; font-size: 12px; line-height: 1.7; }
+
+.team-console.app-shell { display: grid; grid-template-columns: 224px minmax(0, 1fr); min-height: 100dvh; background: #0a0710; }
+.team-console .sidebar { width: 224px; height: 100dvh; position: sticky; top: 0; display: flex; flex-direction: column; padding: 0 0 12px; border-right: 1px solid #ffffff14; background: #121018; box-shadow: none; overflow-y: auto; }
+.team-brand-row { min-height: 64px; display: flex; align-items: center; gap: 10px; padding: 0 14px; border-bottom: 1px solid #ffffff14; }
+.team-back { width: 28px; height: 28px; display: grid; place-items: center; color: #a09eab; background: transparent; border: 1px solid #ffffff1a; border-radius: 4px; flex-shrink: 0; }
+.team-back:hover { color: white; border-color: #ffffff50; }
+.team-brand { display: flex; align-items: center; gap: 10px; background: transparent; border: 0; color: white; padding: 0; }
+.team-brand img { width: 30px; height: 30px; object-fit: contain; border-radius: 3px; }
+.team-brand strong { font-size: 18px; font-weight: 900; letter-spacing: .2em; }
+.team-workspace-card { display: grid; gap: 7px; margin: 20px 16px 24px; padding: 12px; background: #0a0710; border: 1px solid #ffffff14; border-radius: 3px; }
+.team-workspace-card > span { font-size: 9px; text-transform: uppercase; letter-spacing: .12em; color: #92899e; }
+.team-workspace-card strong { font-size: 11px; color: white; letter-spacing: .05em; text-transform: uppercase; }
+.team-workspace-card small { display: flex; align-items: center; gap: 7px; font-size: 10px; color: #d946ef; }
+.team-workspace-card i, .team-copilot-launcher i { width: 5px; height: 5px; border-radius: 50%; background: #d946ef; }
+.team-console .sidebar__nav { display: flex; flex-direction: column; gap: 6px; padding: 0 12px; }
+.team-console .nav-item { min-height: 43px; padding: 10px 12px; gap: 12px; background: transparent; color: #a09eab; border: 1px solid transparent; border-radius: 5px; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; box-shadow: none; }
+.team-console .nav-item:hover { color: white; background: #ffffff05; }
+.team-console .nav-item--active { color: white; border-color: #ffffff25; background: #ffffff08; box-shadow: 0 2px 4px #0002; }
+.team-console .nav-item--active::before { display: none; }
+.team-console .sidebar__foot { margin-top: auto; padding: 20px 12px 0; }
+.team-live-link { display: flex; justify-content: space-between; align-items: center; gap: 6px; padding: 12px 4px; color: #eaa1f5; font-size: 10px; text-decoration: none; }
+.team-investigator { display: flex; align-items: center; gap: 10px; border-top: 1px solid #ffffff10; padding: 16px 4px 10px; }
+.team-investigator b { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid #d946ef40; background: #d946ef15; color: #f0abfc; border-radius: 50%; font-size: 12px; }
+.team-investigator strong, .team-investigator span { display: block; max-width: 142px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.team-investigator strong { font-size: 10px; color: #e4dce9; }
+.team-investigator span { font-size: 9px; color: #93879e; margin-top: 3px; }
+.team-console .workspace { min-width: 0; background: #0a0710; }
+.team-console .topbar { min-height: 64px; padding: 14px 24px; background: #0a0710ed; border-color: #ffffff14; }
+.team-page-heading { display: flex; align-items: center; gap: 9px; }
+.team-page-heading > span { font-size: 10px; color: #82788e; }
+.team-console .topbar h1 { font-size: 11px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+.team-console .command-trigger { background: #121018; border: 1px solid #ffffff15; border-radius: 4px; color: #a09eab; }
+.team-console .command-trigger:hover { background: #1a1625; transform: none; }
+.team-session-badge { font-size: 8px; font-weight: 700; letter-spacing: .12em; padding: 5px 8px; color: #d995eb; border: 1px solid #d946ef30; white-space: nowrap; }
+.team-console .page-content { width: 100%; max-width: none; padding: 24px 24px 96px; }
+.team-copilot-launcher { position: fixed; right: 24px; bottom: 24px; display: flex; align-items: center; gap: 12px; z-index: 35; border: 1px solid #d946ef50; border-radius: 40px; padding: 13px 20px; background: #121018; color: #eee5f3; box-shadow: 0 8px 30px #0008; }
+.team-copilot-launcher:hover { border-color: #d946ef; box-shadow: 0 0 30px #d946ef25; }
+.team-copilot-launcher img { width: 24px; height: 24px; object-fit: contain; }
+.team-copilot-launcher span { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .12em; }
+
+/* Replace the former glass/cyan treatment throughout the live and sample pages. */
+.team-console :is(.panel, .ui-panel, .metric-card, .notice-card, .experience-card, .context-card, .fusion-panel, .fusion-card, .stat-card) { background: #121018; background-image: none; border-color: #ffffff14; border-radius: 3px; box-shadow: none; }
+.team-console :is(.panel__header, .graph-panel__header, .why-panel__header) { background: #121018; border-color: #ffffff14; }
+.team-console :is(.panel__header h3, .graph-panel__header h3, .panel__eyebrow) { font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.team-console :is(.eyebrow, .panel__eyebrow) { color: #d946ef; }
+.team-console .page-intro h2 { font-size: clamp(21px, 2.5vw, 30px); letter-spacing: -.035em; color: #f8f3fc; }
+.team-console .page-intro p { font-size: 12px; color: #a09eab; }
+.team-console :is(.button, .ui-button) { border-radius: 3px; box-shadow: none; font-size: 10px; font-weight: 800; letter-spacing: .055em; }
+.team-console :is(.button--primary, .ui-button--primary), .team-login .button--primary { background: #faf5ff; color: #140d19; border-color: #faf5ff; box-shadow: none; }
+.team-console :is(.button--primary, .ui-button--primary):hover, .team-login .button--primary:hover { background: #eecbf9; border-color: #eecbf9; color: #140d19; }
+.team-console :is(.button--quiet, .ui-button--secondary, .icon-button) { background: #0a0710; border-color: #ffffff20; color: #c4bacf; }
+.team-console :is(.input, .select, textarea, .search-input) { border-radius: 3px; background: #0a0710; border-color: #ffffff20; color: #f4edf7; }
+.team-console :is(.input, textarea):focus { border-color: #d946ef; }
+.team-console .metric-card { border-top: 1px solid #ffffff14; }
+.team-console .metric-card::before, .team-console .metric-card::after { display: none; }
+.team-console .metric-card__icon { background: #d946ef0c; color: #d994ee; border-color: #d946ef20; border-radius: 4px; }
+.team-console .data-table th { background: #0a0710; color: #9b90a7; font-size: 9px; letter-spacing: .1em; }
+.team-console .data-table td { border-color: #ffffff0d; font-size: 12px; }
+.team-console .data-table tr:hover td { background: #ffffff03; }
+.team-console :is(.upload-zone, .evidence-dropzone, .intake-dropzone) { background: #0a0710; border-color: #d946ef50; border-radius: 4px; }
+.team-console :is(.network-canvas, .network-graph, .graph-canvas) { background-color: #0a0710; background-image: radial-gradient(#ffffff0f .8px, transparent .8px); background-size: 30px 30px; }
+.team-console :is(.assistant-message, .copilot-answer, .assistant-composer) { background: #121018; border-color: #ffffff14; border-radius: 7px; }
+.team-console .status-pill { border-radius: 3px; }
+.team-console .live-upload-dropzone { min-height: 180px; background: #0a0710; border: 1px dashed #d946ef50; border-radius: 4px; color: #d99eeb; }
+.team-console .live-upload-dropzone:hover, .team-console .live-upload-dropzone--active { background: #d946ef0c; border-color: #d946ef; }
+.team-console .live-upload-dropzone strong { color: white; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+.team-console .live-upload-dropzone small { color: #a09eab; font-size: 11px; }
+.team-console :is(.intake-item, .receipt-row, .copilot-source) { border-color: #ffffff14; border-radius: 3px; background: #0a0710; }
+.team-console .copilot-chat { background: #121018; border-color: #ffffff14; border-radius: 3px; }
+.team-console .copilot-answer { border-left: 2px solid #d946ef; background: #ffffff05; }
+.team-console .copilot-question { background: #d946ef15; border: 1px solid #d946ef30; border-radius: 10px 10px 0 10px; }
+.team-console .copilot-suggestions button { border-color: #ffffff15; background: #ffffff05; color: #c6b7d1; border-radius: 30px; }
+.team-console .copilot-composer { border-color: #ffffff14; background: #0a0710; }
+.team-console .copilot-composer textarea { border-radius: 8px; background: #ffffff05; }
+.team-console .copilot-response { border: 1px solid #ffffff10; border-left: 2px solid #d946ef; background: #ffffff05; border-radius: 0 9px 9px 9px; }
+.team-console .copilot-header { background: #121018; border-color: #ffffff14; border-radius: 3px; }
+.team-console .experience-route-transition { animation: team-enter 180ms ease-out; }
+.team-sample-tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 0 16px; }
+.team-sample-tabs button { display: flex; align-items: center; gap: 7px; background: transparent; border: 1px solid #ffffff15; color: #a09eab; padding: 10px 13px; border-radius: 3px; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.team-sample-tabs button[aria-selected="true"] { color: white; border-color: #d946ef70; background: #d946ef10; }
+.team-sample-stage { min-height: 580px; height: calc(100dvh - 220px); position: relative; }
+.team-sample-stage--scroll { height: auto; min-height: 580px; }
+.team-live-graph { height: 620px; min-width: 0; }
+.team-graph-node-details { padding: 16px; border: 1px solid #ffffff14; background: #121018; font-size: 12px; }
+.team-graph-node-details h3 { margin-bottom: 8px; font-size: 14px; }
+.team-graph-node-details button { margin: 6px 6px 0 0; padding: 7px; background: #0a0710; border: 1px solid #ffffff20; color: #eedff8; font-size: 11px; }
+.team-graph-node-details small { display: block; color: #a09eab; }
+.team-map-frame { height: 700px; min-height: 500px; position: relative; overflow: hidden; }
+.team-sample-stage > .team-graph-node-details { position: absolute; right: 12px; top: 60px; width: min(290px, 90%); max-height: 65%; overflow-y: auto; }
+.team-sample-tabs button[aria-pressed="true"] { color: white; border-color: #d946ef70; background: #d946ef10; }
+
+.team-login.login-page { background: #0a0710; min-height: 100dvh; grid-template-columns: 1.15fr 1fr; }
+.team-login .login-intro { background: radial-gradient(ellipse at 50% 40%, #8a2be21c, transparent 65%); border-right: 1px solid #ffffff10; }
+.team-login .brand__mark { background: transparent; border: 0; border-radius: 3px; box-shadow: none; }
+.team-login .brand strong { font-weight: 900; color: white; letter-spacing: .2em; }
+.team-login .brand span { color: #a09eab; }
+.team-login .login-intro__copy h1 { font-size: clamp(35px, 4.1vw, 62px); letter-spacing: -.06em; font-weight: 900; }
+.team-login .login-intro__copy h1 em { font-style: normal; color: #d946ef; }
+.team-login .login-panel { border-radius: 3px; background: #121018; border: 1px solid #ffffff1a; box-shadow: 0 25px 100px #0004; padding: 36px; }
+.team-login .login-panel__header h2 { font-size: 28px; font-weight: 900; letter-spacing: -.04em; }
+.team-login .login-panel .input { background: #0a0710; border-color: #ffffff25; border-radius: 3px; min-height: 46px; }
+.team-login .login-panel .button { border-radius: 3px; min-height: 46px; font-weight: 800; }
+.team-login .login-panel .button--quiet { background: transparent; border-color: #ffffff25; color: #cfc3d9; }
+.team-login .login-panel__notice { color: #a095ac; }
+.team-login .login-intro__principles svg { color: #d946ef; }
+.team-login-graph { display: flex; justify-content: space-between; align-items: center; height: 100px; position: relative; max-width: 380px; background: linear-gradient(0deg, transparent 49%, #d946ef40 50%, transparent 51%); }
+.team-login-graph i { display: block; width: 18px; height: 18px; border: 1px solid #d946ef90; background: #1a0520; border-radius: 50%; box-shadow: 0 0 25px #d946ef20; }
+.team-login-graph i:nth-child(3) { width: 34px; height: 34px; border-color: #d946ef; box-shadow: 0 0 35px #d946ef40; }
+.team-login-graph span { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; color: #ac8cbc; font-size: 9px; text-transform: uppercase; letter-spacing: .14em; }
+@keyframes team-enter { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+@media (max-width: 1050px) { .team-console .topbar__actions { gap: 8px; } .team-console .network-workspace { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 767px) {
+  .team-console.app-shell { grid-template-columns: 64px minmax(0, 1fr); }
+  .team-console .sidebar { width: 64px; height: 100dvh; position: sticky; padding: 0 0 8px; }
+  .team-brand-row { padding: 0; justify-content: center; }
+  .team-back, .team-brand strong, .team-workspace-card, .team-investigator, .team-live-link { display: none; }
+  .team-console .sidebar__nav { padding: 12px 6px; gap: 5px; }
+  .team-console .nav-item { justify-content: center; min-width: 0; min-height: 44px; padding: 10px; }
+  .team-console .nav-item span { display: none; }
+  .team-console .sidebar__foot { padding: 12px 6px 0; }
+  .team-console .topbar { padding: 12px; gap: 8px; }
+  .team-page-heading > span, .team-session-badge, .team-console .command-trigger span, .team-console .command-trigger kbd { display: none; }
+  .team-console .page-content { padding: 16px 12px 88px; }
+  .team-console .page-intro--split { grid-template-columns: minmax(0, 1fr); }
+  .team-console .page-intro h2 { font-size: 23px; }
+  .team-copilot-launcher { right: 14px; bottom: 14px; padding: 12px; }
+  .team-copilot-launcher span { display: none; }
+  .team-login.login-page { display: flex; flex-direction: column; }
+  .team-login .login-intro { padding: 28px 24px; border-right: 0; }
+  .team-login .login-intro__copy { margin-top: 30px; }
+  .team-login .login-intro__copy h1 { font-size: 36px; }
+  .team-login .login-intro__principles, .team-login-graph { display: none; }
+  .team-login .login-panel-wrap { padding: 16px; }
+  .team-login .login-panel { padding: 24px; }
+  .team-sample-stage { height: 650px; }
+  .team-live-graph { height: 500px; }
+  .team-map-frame { height: 900px; overflow: auto; }
+  .team-hotspot-layout { flex-direction: column; }
+  .team-hotspot-sidebar { width: 100% !important; height: 260px; max-height: 40%; }
+  .team-hotspot-layout > div:last-child { min-height: 350px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .team-ui *, .team-console *, .team-login * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

@@ -35,8 +35,8 @@ it("renders the map in the authenticated shell with its active sidebar entry", a
   writeSession({ access_token: "test-session", token_type: "bearer", expires_in: 3600, user: { id: "test-user", email: "test@example.invalid", full_name: "Test", role: "administrator", is_active: true } });
   await act(async () => root.render(<App />));
   expect(host.textContent).toContain("Authenticated fusion map content");
-  expect(host.querySelector(".nav-item--active")?.textContent).toContain("Intelligence Fusion Center");
-  expect(host.textContent).toContain("Live Cases");
+  expect(host.querySelector(".nav-item--active")?.textContent).toContain("Map & Identity");
+  expect(host.textContent).toContain("Cases");
   expect(window.location.pathname).toBe("/live/fusion");
   expect(host.querySelector('input[type="email"]')).toBeNull();
 });

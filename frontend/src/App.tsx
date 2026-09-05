@@ -14,7 +14,6 @@ import { CaseWorkspacePage } from "./pages/CaseWorkspacePage";
 import { CaseWorkspaceExperiencePage, type WorkspaceTab } from "./pages/CaseWorkspaceExperiencePage";
 import { CasesPage } from "./pages/CasesPage";
 import { CommandCenterPage } from "./pages/CommandCenterPage";
-import { DashboardExperiencePage } from "./pages/DashboardExperiencePage";
 import { DataStorePage } from "./pages/DataStorePage";
 import { EvidencePage } from "./pages/EvidencePage";
 import { HypothesisWorkbenchPage } from "./pages/HypothesisWorkbenchPage";
@@ -25,6 +24,8 @@ import { LiveAssistantPage } from "./pages/LiveAssistantPage";
 import { LoginPage } from "./pages/LoginPage";
 import { SystemHealthPage } from "./pages/SystemHealthPage";
 import { TimelinePage } from "./pages/TimelinePage";
+
+const TeamSampleWorkspace = lazy(async () => ({ default: (await import("./features/teammate/TeamSampleWorkspace")).TeamSampleWorkspace }));
 
 const NetworkExplorerPage = lazy(async () => ({ default: (await import("./pages/NetworkExplorerPage")).NetworkExplorerPage }));
 const FusionIntelligencePage = lazy(async () => ({ default: (await import("./pages/FusionIntelligencePage")).FusionIntelligencePage }));
@@ -114,7 +115,7 @@ function ExperienceConsole({ route, navigate }: { route: Exclude<SutraRoute, { n
   else if (route.name === "fusion") page = <FusionIntelligencePage onOpenNetwork={openNetwork} onOpenEvidence={openEvidence} />;
   else if (route.name === "hypotheses") page = <HypothesisWorkbenchPage />;
   else if (route.name === "assistant") page = <AssistantPage onOpenNetwork={openNetwork} onOpenEvidence={openEvidence} onOpenTimeline={() => navigate("/cases/case-104/timeline")} />;
-  else page = <DashboardExperiencePage onOpenCase={openCase} onOpenNetwork={openNetwork} onOpenFusion={openFusion} onOpenHypotheses={() => navigate("/hypotheses")} />;
+  else page = <TeamSampleWorkspace onOpenLive={() => navigate("/live/evidence")} />;
 
   const pageKey = route.name === "case-workspace" ? `${route.name}-${route.caseId}-${route.tab}` : `${route.name}-${"evidenceId" in route ? route.evidenceId ?? "" : ""}`;
   return <>
@@ -239,9 +240,9 @@ function SutraApp() {
     navigate("/", { replace: true });
   }, [navigate]);
 
-  if (route.name === "landing") return <LandingPage onExplorePlatform={() => navigate("/cases/case-104/overview")} onWatchDemo={() => navigate("/network")} onOpenLogin={() => navigate("/login")} accessLabel="Open Live Console" />;
-  if (route.name === "login") return session ? <LiveConsole route={{ name: "live-dashboard" }} session={session} navigate={navigate} onLogout={logout} /> : <LoginPage onAuthenticated={authenticated} onOpenDemo={() => navigate("/cases/case-104/overview")} />;
-  if (route.name.startsWith("live-")) return session ? <LiveConsole route={route} session={session} navigate={navigate} onLogout={logout} /> : <LoginPage onAuthenticated={authenticated} onOpenDemo={() => navigate("/cases/case-104/overview")} />;
+  if (route.name === "landing") return <LandingPage onExplorePlatform={() => navigate("/cases/case-104/overview")} onWatchDemo={() => navigate("/dashboard")} onOpenLogin={() => navigate("/login")} accessLabel="Open Live Console" />;
+  if (route.name === "login") return session ? <LiveConsole route={{ name: "live-dashboard" }} session={session} navigate={navigate} onLogout={logout} /> : <LoginPage onAuthenticated={authenticated} onOpenDemo={() => navigate("/dashboard")} />;
+  if (route.name.startsWith("live-")) return session ? <LiveConsole route={route} session={session} navigate={navigate} onLogout={logout} /> : <LoginPage onAuthenticated={authenticated} onOpenDemo={() => navigate("/dashboard")} />;
   return <DemoExperienceProvider><ExperienceConsole route={route} navigate={navigate} /></DemoExperienceProvider>;
 }
 

@@ -1,3 +1,13 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Preserve backend/runtime protections
 # Python
 __pycache__/
 *.py[cod]
@@ -43,3 +53,7 @@ Thumbs.db
 .DS_Store
 
 .vercel
+# Local credentials and temporary deployment copies
+password.txt
+.deploy-stage/
+storage_test/
