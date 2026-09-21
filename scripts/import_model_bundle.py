@@ -11,9 +11,6 @@ import json
 import sys
 from pathlib import Path
 
-# Keep the CLI directly runnable even when the caller's working directory is
-# not the repository root.  model_bundle_common repeats the backend bootstrap
-# before importing app.model_registry.
 _SCRIPT_ROOT = Path(__file__).resolve().parent
 if str(_SCRIPT_ROOT) not in sys.path:
     sys.path.insert(0, str(_SCRIPT_ROOT))

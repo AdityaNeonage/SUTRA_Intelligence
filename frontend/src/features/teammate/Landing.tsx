@@ -2,7 +2,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect, useRef } from 'react';
 import { Network, Brain, Eye, FileText, MessageSquare, ChevronRight, Database, Zap, Shield, GitMerge, Activity } from 'lucide-react';
 import { cn } from './lib/utils';
-import { HoloSection } from './HoloSection';
 import { CorePipeline } from './components/CorePipeline';
 
 // ─── DATA ────────────────────────────────────────────────────────────────────

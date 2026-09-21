@@ -45,7 +45,7 @@ export function LiveNetworkPage({
   return (
     <div className="page-stack">
       <section className="page-intro page-intro--split">
-        <div><div className="eyebrow">Backend knowledge graph</div><h2>Investigation graph.</h2><p>Select a connection to inspect its evidence state, provenance, and confidence.</p></div>
+        <div><div className="eyebrow">Backend knowledge graph</div><h2>Investigation graph.</h2><p>Nodes automatically separate when the graph is dense. Select a connection to inspect its evidence state, provenance, and confidence.</p></div>
         <label className="field-label" htmlFor="live-network-case">Case context<select id="live-network-case" className="input" value={caseId} onChange={(event) => { setSelectedEdgeId(undefined); onSelectCase(event.target.value); }}>{cases.data?.map((item) => <option key={item.id} value={item.id}>{item.case_number} - {item.title}</option>)}</select></label>
       </section>
       {nodes.length === 0 ? <EmptyState title="No graph data returned" description="This case has no processed entities or relationships yet." /> : (

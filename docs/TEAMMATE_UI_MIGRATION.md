@@ -1,7 +1,7 @@
 # Teammate UI integration
 
 The active Vercel service is still `frontend/`; the backend and API routing are unchanged.
-Root-level `src/`, `public/` and the teammate's config files are retained as the supplied reference.
+The unused root-level demo (`src/`, `public/` and its build configuration) was removed after integration. Its original source remains recoverable from Git commit `4c7cf42`.
 Adapted, type-checked components live in `frontend/src/features/teammate/`.
 Root `npm run dev`, `build` and `preview` now forward to the integrated frontend.
 
@@ -11,6 +11,7 @@ Root `npm run dev`, `build` and `preview` now forward to the integrated frontend
 - Redesigned authenticated shell, login, shared cards/forms/tables and evidence upload treatment.
 - New sample workspace with the actual teammate graph, timeline, identity, hotspot map and insights components.
 - Live Network renders API entities/edges through the new graph with original identifiers and evidence provenance.
+- Live Network uses a deterministic spatial-hash collision layout, so overlapping entity nodes separate visually without changing any stored data.
 - Live Map & Identity includes the teammate map and identity comparison; the existing linked-evidence map is retained as a separate view.
 - Identity review in the sample is local-only. Fake media processing and random AI replies were not imported.
 
@@ -21,6 +22,7 @@ Map tiles require internet access to OpenStreetMap. Live geographic ingestion is
 Live login, evidence processing, Data Store and Copilot still use the existing backend.
 No new generative model or image/audio/video extraction has been added.
 The Copilot remains deterministic and evidence-grounded.
+The graph collision layout is visual-only; it must not be interpreted as entity matching, duplicate detection, risk scoring, or an investigative conclusion.
 
 ## Run
 

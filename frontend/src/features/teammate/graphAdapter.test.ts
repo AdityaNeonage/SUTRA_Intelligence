@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { toTeamGraph } from "./graphAdapter";
+import { GRAPH_NODE_CLEARANCE, resolveNodeCollisions, toTeamGraph } from "./graphAdapter";
 import type { GraphEdge, GraphNode } from "../../types/api";
 
 const nodes: GraphNode[] = [
@@ -23,5 +23,40 @@ describe("teammate graph backend adapter", () => {
     expect(toTeamGraph([], [])).toEqual({ nodes: [], edges: [] });
     expect(toTeamGraph(nodes.slice(0, 1), []).nodes[0]).toMatchObject({ x: 450, y: 340, connections: 0 });
     expect(toTeamGraph(nodes, [edge])).toEqual(toTeamGraph(nodes, [edge]));
+  });
+
+  it("separates dense, overlapping display nodes without changing their evidence data", () => {
+    const dense = Array.from({ length: 28 }, (_, index) => ({
+      id: `entity-${String(index).padStart(2, "0")}`,
+      label: `Entity ${index}`,
+      type: "evidence" as const,
+      x: 450,
+      y: 340,
+      riskScore: 0,
+      metadata: { source: "unchanged" },
+    }));
+    const positioned = resolveNodeCollisions(dense);
+    expect(positioned.map(node => node.id)).toEqual(dense.map(node => node.id));
+    expect(positioned.map(node => node.metadata)).toEqual(dense.map(node => node.metadata));
+    for (let left = 0; left < positioned.length; left += 1) {
+      for (let right = left + 1; right < positioned.length; right += 1) {
+        const distance = Math.hypot(positioned[left].x - positioned[right].x, positioned[left].y - positioned[right].y);
+        expect(distance).toBeGreaterThanOrEqual(GRAPH_NODE_CLEARANCE - 0.01);
+      }
+    }
+  });
+
+  it("uses collision-safe positions for a dense backend graph deterministically", () => {
+    const denseNodes = Array.from({ length: 34 }, (_, index) => ({
+      id: `node-${index}`,
+      label: `Node ${index}`,
+      entityType: "DOCUMENT",
+      caseIds: ["c1"],
+      raw: {},
+    }));
+    const first = toTeamGraph(denseNodes, []);
+    const second = toTeamGraph([...denseNodes].reverse(), []);
+    const byId = new Map(second.nodes.map(node => [node.id, node]));
+    for (const node of first.nodes) expect(byId.get(node.id)).toMatchObject({ x: node.x, y: node.y });
   });
 });
